@@ -1,0 +1,2 @@
+C:\Users\89402\source\repos\MFCApplication1\Debug\MFCApplication1.exe
+C:\Users\89402\source\repos\MFCApplication1\Debug\MFCApplication1.pdb
