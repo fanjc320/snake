@@ -1,1 +1,25 @@
-﻿C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\MSBuild\Microsoft\VC\v160\Microsoft.CppBuild.targets(418,5): error MSB8041: MFC libraries are required for this project. Install them from the Visual Studio installer (Individual Components tab) for any toolsets and architectures being used.
+﻿  MFCApplication1.cpp
+D:\MFCApplication1\MFCApplication1View.h(23,12): warning C4244:  “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\MFCApplication1\MFCApplication1View.h(24,12): warning C4244:  “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\MFCApplication1\MFCApplication1View.h(59,1): warning C4305:  “=”: 从“double”到“float”截断
+D:\MFCApplication1\MFCApplication1View.h(66,1): warning C4305:  “=”: 从“double”到“float”截断
+D:\MFCApplication1\MFCApplication1View.h(91,14): warning C4244:  “return”: 从“double”转换到“float”，可能丢失数据
+D:\MFCApplication1\MFCApplication1View.h(163,26): warning C4244:  “参数”: 从“int”转换到“float”，可能丢失数据
+D:\MFCApplication1\MFCApplication1View.h(246,19): warning C4018:  “<”: 有符号/无符号不匹配
+D:\MFCApplication1\MFCApplication1View.h(258,34): warning C4244:  “参数”: 从“int”转换到“float”，可能丢失数据
+D:\MFCApplication1\MFCApplication1View.h(281,29): warning C4244:  “=”: 从“LONG”转换到“float”，可能丢失数据
+  MFCApplication1View.cpp
+D:\MFCApplication1\MFCApplication1View.h(282,29): warning C4244:  “=”: 从“LONG”转换到“float”，可能丢失数据
+D:\MFCApplication1\MFCApplication1View.h(23,12): warning C4244:  “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\MFCApplication1\MFCApplication1View.h(24,12): warning C4244:  “初始化”: 从“double”转换到“float”，可能丢失数据
+D:\MFCApplication1\MFCApplication1View.h(59,1): warning C4305:  “=”: 从“double”到“float”截断
+D:\MFCApplication1\MFCApplication1View.h(66,1): warning C4305:  “=”: 从“double”到“float”截断
+D:\MFCApplication1\MFCApplication1View.h(91,14): warning C4244:  “return”: 从“double”转换到“float”，可能丢失数据
+D:\MFCApplication1\MFCApplication1View.h(163,26): warning C4244:  “参数”: 从“int”转换到“float”，可能丢失数据
+D:\MFCApplication1\MFCApplication1View.h(246,19): warning C4018:  “<”: 有符号/无符号不匹配
+D:\MFCApplication1\MFCApplication1View.h(258,34): warning C4244:  “参数”: 从“int”转换到“float”，可能丢失数据
+D:\MFCApplication1\MFCApplication1View.h(281,29): warning C4244:  “=”: 从“LONG”转换到“float”，可能丢失数据
+D:\MFCApplication1\MFCApplication1View.h(282,29): warning C4244:  “=”: 从“LONG”转换到“float”，可能丢失数据
+  正在生成代码...
+D:\MFCApplication1\MFCApplication1View.cpp(215,19): warning C4018:  “<”: 有符号/无符号不匹配
+  MFCApplication1.vcxproj -> D:\MFCApplication1\Debug\MFCApplication1.exe

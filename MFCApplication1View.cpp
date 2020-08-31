@@ -121,8 +121,13 @@ void CMFCApplication1View::OnDraw(CDC* pDC)
      
     CLine line0 = g_Lines.moveAngle(); 
 
-    /*g_vPoint.push_back(line0.m_begin); 
-    drawPoits(pDC, g_vPoint);*/
+	g_vPoint.push_back(line0.m_begin);
+	drawPoits(pDC, g_vPoint);
+	/*for (auto& line:g_Lines.m_lines)
+	{
+		g_vPoint.push_back(line.m_begin);
+		drawPoits(pDC, g_vPoint);
+	}*/
 
     
     //DrawAngleArc(pDC);
