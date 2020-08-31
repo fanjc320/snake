@@ -29,6 +29,8 @@ BEGIN_MESSAGE_MAP(CMFCApplication1View, CView)
 	ON_COMMAND(ID_FILE_PRINT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_DIRECT, &CView::OnFilePrint)
 	ON_COMMAND(ID_FILE_PRINT_PREVIEW, &CView::OnFilePrintPreview)
+    ON_WM_KEYUP()
+    ON_WM_CHAR()
 END_MESSAGE_MAP()
 
 // CMFCApplication1View 构造/析构
@@ -67,6 +69,9 @@ CMFCApplication1View::CMFCApplication1View() noexcept
     wchar_t a[MAX_PATH] = { 0 };
     wsprintf(a, L"%d######################################\n", b);
     OutputDebugString(a);
+
+    m_Direction.m_x = 1.0f;
+    m_Direction.m_y = 0.0f;
 }
 
 CMFCApplication1View::~CMFCApplication1View()
@@ -331,4 +336,54 @@ void CMFCApplication1View::DrawAngleArc(CDC* pDC)
         pDC->AngleArc(ptCenter.x, ptCenter.y, r, angleStart, angleEnd);
     }
     pDC->SelectObject(oldPen);
+}
+
+void CMFCApplication1View::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+    // TODO: Add your message handler code here and/or call default
+    if (nChar == VK_SHIFT)//判断Shift键是否被按下
+    {
+        //AfxMessageBox("dd");
+        /*bShiftdown = true;
+        bShiftup = false;*/
+        Invalidate(true);//显示信息
+    }
+    CView::OnKeyDown(nChar, nRepCnt, nFlags);
+}
+
+void CMFCApplication1View::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+    // TODO: 在此添加消息处理程序代码和/或调用默认值
+
+    CView::OnKeyUp(nChar, nRepCnt, nFlags);
+}
+
+
+BOOL CMFCApplication1View::PreTranslateMessage(MSG* pMsg)
+{
+   
+    // TODO: 在此添加专用代码和/或调用基类
+    if (pMsg->message == WM_KEYDOWN)
+    {
+        if (pMsg->wParam == VK_RETURN)//回车键
+        {
+            //OnBnClickedButtonInput();
+            return TRUE;
+        }
+        if (pMsg->wParam == VK_SPACE)//空格键
+        {
+            //OnBnClickedButtonStartStop();
+        }
+
+
+    }
+    return CView::PreTranslateMessage(pMsg);
+}
+
+
+void CMFCApplication1View::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
+{
+    // TODO: 在此添加消息处理程序代码和/或调用默认值
+
+    CView::OnChar(nChar, nRepCnt, nFlags);
 }

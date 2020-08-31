@@ -234,7 +234,7 @@ struct CLines {
 
 	CLine moveAngle()
 	{
-		int distance = m_distance;
+		//int distance = m_distance;
 		CLine& line0 = m_lines[0];
 		int iDistance = 50;
 		int size = m_unitAngle.m_vPoint.size();
@@ -317,6 +317,8 @@ public:
 	void DrawArc(CDC* pDC);
 	void DrawAngleArc(CDC* pDC);
 
+	void OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags);
+
 	void DrawEllipse(CDC* pDC, CPoint mid);
 
 // 重写
@@ -343,6 +345,11 @@ protected:
 // 生成的消息映射函数
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
+	CMyPoint m_Direction;
+	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 };
 
 //void initLines(std::vector<CLine>& lines);

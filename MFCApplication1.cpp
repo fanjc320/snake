@@ -154,6 +154,8 @@ protected:
 // 实现
 protected:
 	DECLARE_MESSAGE_MAP()
+public:
+	virtual BOOL PreTranslateMessage(MSG* pMsg);
 };
 
 CAboutDlg::CAboutDlg() noexcept : CDialogEx(IDD_ABOUTBOX)
@@ -179,3 +181,11 @@ void CMFCApplication1App::OnAppAbout()
 
 
 
+
+
+BOOL CAboutDlg::PreTranslateMessage(MSG* pMsg)
+{
+	// TODO: 在此添加专用代码和/或调用基类
+
+	return CDialogEx::PreTranslateMessage(pMsg);
+}
