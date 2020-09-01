@@ -109,7 +109,7 @@ void CMFCApplication1View::drawLines(CDC* pDC, std::vector<CLine>& lines)
 
 CLines g_headLines;
 std::vector<CPoint> g_vPoint;
-// CMFCApplication1View 绘图
+// CMFCApplication1View 绘图 
 
 void CMFCApplication1View::OnDraw(CDC* pDC)
 {
@@ -124,7 +124,7 @@ void CMFCApplication1View::OnDraw(CDC* pDC)
     drawLines(pDC, g_Lines.m_lines);
     DrawArc(pDC);
      
-    CLine line0 = g_Lines.moveAngle(); 
+    CLine line0 = g_Lines.moveAngle(m_Direction);
 
 	g_vPoint.push_back(line0.m_begin);
 	drawPoits(pDC, g_vPoint);

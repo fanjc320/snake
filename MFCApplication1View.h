@@ -205,7 +205,7 @@ struct CLines {
 	CLines()
 	{
 		CPoint begin(500, 200);
-		int iLength = 50;
+		int iLength = 20;
 		CPoint end = begin;
 		for (int i = 0; i < 10; ++i)
 		{
@@ -232,11 +232,11 @@ struct CLines {
 		m_lines.push_back(line);
 	}
 
-	CLine moveAngle()
+	CLine moveAngle(CMyPoint toVec)
 	{
 		//int distance = m_distance;
 		CLine& line0 = m_lines[0];
-		int iDistance = 50;
+		int iDistance = m_distance;
 		int size = m_unitAngle.m_vPoint.size();
 		//int index = m_moveNum % size;
 		CVec mvVec = CVec(0, 0, 0);
@@ -245,20 +245,31 @@ struct CLines {
 		CMyPoint myP_last;
 		for (int i=0; i < m_lines.size(); ++i)
 		{
-			int index = 0;
-			if (m_moveNum + m_Angle - i >0 )
-				index = (m_moveNum + m_Angle - i) % size;
+			CMyPoint mp = m_unitAngle.m_vPoint[m_index];//一个单位向量，表示方向
+			 
+			if (abs(toVec.m_x * mp.m_y - toVec.m_y * mp.m_x) < 0.01f)
+			{
+
+			}
+			else
+			{
+				if (m_moveNum + m_Angle - i > 0)
+					m_index = (m_moveNum + m_Angle - i) % size;
+				++m_moveNum;
+			}
+
 			
-			//int index_last = (m_moveNum + m_Angle - i + 1) % size;
-			CMyPoint mp = m_unitAngle.m_vPoint[index];//一个单位向量，表示方向
-			//CMyPoint mp_last = m_unitAngle.m_vPoint[index_last];//上一个单位向量，表示方向
+
+			mvVec = CVec(mp.m_x, mp.m_y, iDistance);
+			mvVec.m_x = mp.m_x * iDistance;
+			mvVec.m_y = mp.m_y * iDistance;
+			
+			
 			CLine& line = m_lines[i];
 			if (i == 0)
 			{
-				mvVec = CVec(mp.m_x, mp.m_y, iDistance);
-				mvVec.m_x = mp.m_x * iDistance; 
-				mvVec.m_y = mp.m_y * iDistance;
-				str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), index, mp.m_x, mp.m_y);
+				
+				str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), m_index, mp.m_x, mp.m_y);
 				OutputDebugString(str);
 
 				line.moveVec(mvVec);
@@ -268,8 +279,9 @@ struct CLines {
 				CMyPoint vec_now;
 				vec_now.m_x = mp.m_x * iDistance;
 				vec_now.m_y = mp.m_y * iDistance;
-				
-				str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), index, mp.m_x, mp.m_y);
+				 
+
+				str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), m_index, mp.m_x, mp.m_y);
 				OutputDebugString(str);
 
 				CMyPoint now;
@@ -281,11 +293,11 @@ struct CLines {
 			myP_last.m_x = line.m_mid.x;
 			myP_last.m_y = line.m_mid.y;
 		}
-		++m_moveNum;
+		
 		return line0;
 	}
-	
-	int m_distance = 50;
+	int m_index = 0;
+	int m_distance = 30;
 	CUnitAngle m_unitAngle;
 	int m_unitNum = 30;
 	int m_Angle = 5;//5个单位向量
