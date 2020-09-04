@@ -246,17 +246,19 @@ struct CLines {
 		for (int i=0; i < m_lines.size(); ++i)
 		{
 			CMyPoint mp = m_unitAngle.m_vPoint[m_index];//一个单位向量，表示方向
-			 
-			if (abs(toVec.m_x * mp.m_y - toVec.m_y * mp.m_x) < 0.01f)
+			str.Format(_T("moveAngle 0000 index:%d vec_x:%6f vec_y:%6f x:%6f y:%6f \n"), m_index, toVec.m_x, toVec.m_y, mp.m_x, mp.m_y);
+			OutputDebugString(str);
+			/*if (abs(toVec.m_x * mp.m_y - toVec.m_y * mp.m_x) < 0.01f)
 			{
-
+				str.Format(_T("moveAngle <<< index:%d vec_x:%6f vec_y:%6f x:%6f y:%6f \n"), m_index, toVec.m_x, toVec.m_y, mp.m_x, mp.m_y);
+				OutputDebugString(str);
 			}
 			else
-			{
+			{*/
 				if (m_moveNum + m_Angle - i > 0)
 					m_index = (m_moveNum + m_Angle - i) % size;
 				++m_moveNum;
-			}
+			//}
 
 			
 
@@ -269,7 +271,7 @@ struct CLines {
 			if (i == 0)
 			{
 				
-				str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), m_index, mp.m_x, mp.m_y);
+				str.Format(_T("moveAngle i=0 index:%d x:%6f y:%6f \n"), m_index, mp.m_x, mp.m_y);
 				OutputDebugString(str);
 
 				line.moveVec(mvVec);
@@ -281,7 +283,7 @@ struct CLines {
 				vec_now.m_y = mp.m_y * iDistance;
 				 
 
-				str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), m_index, mp.m_x, mp.m_y);
+				str.Format(_T("moveAngle i!=0 index:%d x:%6f y:%6f \n"), m_index, mp.m_x, mp.m_y);
 				OutputDebugString(str);
 
 				CMyPoint now;
@@ -299,7 +301,7 @@ struct CLines {
 	int m_index = 0;
 	int m_distance = 30;
 	CUnitAngle m_unitAngle;
-	int m_unitNum = 30;
+	int m_unitNum = 30;//单位圆30等分
 	int m_Angle = 5;//5个单位向量
 	int m_moveNum = 0;
 };

@@ -338,6 +338,7 @@ void CMFCApplication1View::DrawAngleArc(CDC* pDC)
     pDC->SelectObject(oldPen);
 }
 
+//无效
 void CMFCApplication1View::OnKeyDown(UINT nChar, UINT nRepCnt, UINT nFlags)
 {
     // TODO: Add your message handler code here and/or call default
@@ -356,12 +357,38 @@ void CMFCApplication1View::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
     // TODO: 在此添加消息处理程序代码和/或调用默认值
 
     CView::OnKeyUp(nChar, nRepCnt, nFlags);
+	if (nChar == 87)//w
+	{
+		//MessageBox(L"ww");
+		m_Direction.m_x = 0.0f;
+		m_Direction.m_y = 1.0f;
+	}
+	else if(nChar == 65)//a
+	{
+		m_Direction.m_x = -1.0f;
+		m_Direction.m_y = 0.0f;
+	}
+	else if (nChar == 83)//s
+	{
+		m_Direction.m_x = 0.0f;
+		m_Direction.m_y = -1.0f;
+	}
+	else if (nChar == 68)//d
+	{
+		m_Direction.m_x = 1.0f;
+		m_Direction.m_y = 0.0f;
+	}
+	CString str;
+	str.Format(_T("OnKeyUp  ==================================================== \n") );
+	OutputDebugString(str);
 }
 
 
 BOOL CMFCApplication1View::PreTranslateMessage(MSG* pMsg)
 {
-   
+	//https://www.cnblogs.com/lujin49/archive/2015/10/29/4919900.html
+	/*SendMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
+	return 0;*/
     // TODO: 在此添加专用代码和/或调用基类
     if (pMsg->message == WM_KEYDOWN)
     {
@@ -386,4 +413,8 @@ void CMFCApplication1View::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
     // TODO: 在此添加消息处理程序代码和/或调用默认值
 
     CView::OnChar(nChar, nRepCnt, nFlags);
+	if (nChar =='w')
+	{
+		MessageBox(L"w");
+	}
 }
