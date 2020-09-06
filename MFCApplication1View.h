@@ -14,9 +14,9 @@ struct CLines {
 	CLines()
 	{
 		CMyPoint begin(500, 200);
-		int iLength = 50;
+		int iLength = 10;
 		CMyPoint end = begin;
-		for (int i = 0; i < 10; ++i)
+		for (int i = 0; i < 50; ++i)
 		{
 			CMyPoint end(begin.m_x - iLength, begin.m_y);
 			CLine line(begin, end);
@@ -49,7 +49,7 @@ struct CLines {
 	CLine moveToIndex(int iToIndex)
 	{
 		CLine& line0 = m_lines[0];
-		int iDistance = 20;
+		int iDistance = 10;
 		int size = m_unitAngle.m_vPoint.size();
 		
 		CMyPoint mvVec;
@@ -124,6 +124,7 @@ struct CLines {
 	int m_distance = 50;
 	CUnitAngle m_unitAngle;
 	int m_Angle = 5;//5个单位向量
+	int m_Index = 5;//
 	int m_moveNum = 0;
 };
 
