@@ -124,7 +124,7 @@ void CMFCApplication1View::OnDraw(CDC* pDC)
     drawLines(pDC, g_Lines.m_lines);
     DrawArc(pDC);
      
-    CLine line0 = g_Lines.moveAngle(m_Direction);
+    CLine line0 = g_Lines.moveAngle(m_ToIndex);
     //CLine line0 = g_Lines.moveAngle();
 
 	g_vPoint.push_back(line0.m_begin);
@@ -360,21 +360,25 @@ void CMFCApplication1View::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 		//MessageBox(L"ww");
 		m_Direction.m_x = 0.0f;
 		m_Direction.m_y = 1.0f;
+        m_ToIndex = g_unitNum / 4 * 3;
 	}
 	else if(nChar == 65)//a
 	{
 		m_Direction.m_x = -1.0f;
 		m_Direction.m_y = 0.0f;
+        m_ToIndex = g_unitNum / 4 * 2;
 	}
 	else if (nChar == 87)//s
 	{
 		m_Direction.m_x = 0.0f;
 		m_Direction.m_y = -1.0f;
+        m_ToIndex = g_unitNum / 4 * 1;
 	}
 	else if (nChar == 68)//d
 	{
 		m_Direction.m_x = 1.0f;
 		m_Direction.m_y = 0.0f;
+        m_ToIndex = 0;
 	}
     
 }
