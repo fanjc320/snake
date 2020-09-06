@@ -6,7 +6,7 @@
 #include <vector>
 #include <cmath>
 #include "util.h"
-
+using namespace std;
 static int g_unitNum = 32;
 
 
@@ -14,7 +14,7 @@ struct CLines {
 	CLines()
 	{
 		CMyPoint begin(500, 200);
-		int iLength = 10;
+		int iLength = 8;
 		CMyPoint end = begin;
 		for (int i = 0; i < 50; ++i)
 		{
@@ -43,31 +43,6 @@ struct CLines {
 
 	void moveTo(CLine& line, int iToIndex)
 	{
-
-	}
-	void getTravelDirect(int index1, int index2, std::vector<int> vIndexs)//单位向量的集合,按顺序，正序或逆序
-	{
-		bool bReverse = false;
-		if (abs(index1-index2) > g_unitNum/2 )
-		{
-			bReverse = true;
-		}
-		int minIdx = min(index1, index2);
-		int maxIdx = max(index1, index2);
-		
-		for (int i = index1;i!=index2;++i)
-		{
-			vIndexs.push_back(i);
-			if (index1<=index2)
-			{
-				++i;
-			}
-			else
-			{
-				--i;
-			}
-			
-		}
 
 	}
 
@@ -151,8 +126,90 @@ struct CLines {
 	int m_distance = 50;
 	CUnitAngle m_unitAngle;
 	int m_Angle = 5;//5个单位向量
-	int m_Index = 5;//
+	int m_CurIndex = 0;// 控制头部转弯到第几个index
 	int m_moveNum = 0;
+
+	CLine moveToIndexNew(int iToIndex)
+	{
+		CLine& line0 = m_lines[0];
+		int iDistance = 10;//转弯
+		int iDistance1 = 12;//直行
+		int size = m_unitAngle.m_vPoint.size();
+
+		CMyPoint mvVec;
+		CString str;
+		CMyPoint myP_last;
+		bool bFlag = false;
+
+		if (iToIndex < m_CurIndex)
+		{
+			iToIndex += g_unitNum;
+		}
+		if (iToIndex == m_CurIndex)
+		{
+			//已到达目的转向，
+		}
+		else if (iToIndex - m_CurIndex < g_unitNum / 2)
+		{
+			++m_CurIndex;
+		}
+		else
+		{
+			--m_CurIndex;
+		}
+		
+		m_CurIndex = m_CurIndex % g_unitNum;
+
+		for (int i = 0; i < m_lines.size(); ++i)
+		{
+			CLine& line = m_lines[i];
+			CMyPoint mp;
+
+			//if (m_CurIndex + m_Angle - i > 0)
+			//{
+			//	int index = (m_CurIndex + m_Angle - i) % size;
+			//	mp = m_unitAngle.m_vPoint[index];//一个单位向量，表示方向
+			//	
+			//	if (index == iToIndex)
+			//	{
+			//		str.Format(_T("===============moveAngle index:%d toindex:%d mpx:%6f mpy:%6f ===============\n"),
+			//			index, iToIndex, mp.m_x, mp.m_y);
+			//		OutputDebugString(str);
+			//	}
+			//}
+
+			if (i == 0)
+			{
+				mp = m_unitAngle.m_vPoint[m_CurIndex];//一个单位向量，表示方向
+				mvVec = CMyPoint(mp.m_x, mp.m_y);
+				mvVec.m_x = mp.m_x * iDistance;
+				mvVec.m_y = mp.m_y * iDistance;
+				str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), m_CurIndex, mp.m_x, mp.m_y);
+				OutputDebugString(str);
+
+				line.moveVec(mvVec);
+				myP_last.m_x = mvVec.m_x;
+				myP_last.m_y = mvVec.m_y;
+			}
+			else
+			{
+				CMyPoint vec_now;
+				vec_now.m_x = mp.m_x * iDistance;
+				vec_now.m_y = mp.m_y * iDistance;
+				
+				CMyPoint now;
+				now.m_x = myP_last.m_x - vec_now.m_x;
+				now.m_y = myP_last.m_y - vec_now.m_y;
+
+				line.moveToPoint(now);
+			}
+			myP_last.m_x = line.m_mid.m_x;
+			myP_last.m_y = line.m_mid.m_y;
+		}
+		 
+		 
+		return line0;
+	}
 };
 
 class CMFCApplication1View : public CView

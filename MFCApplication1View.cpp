@@ -124,7 +124,8 @@ void CMFCApplication1View::OnDraw(CDC* pDC)
     drawLines(pDC, g_Lines.m_lines);
     DrawArc(pDC);
      
-    CLine line0 = g_Lines.moveToIndex(m_ToIndex);
+    //CLine line0 = g_Lines.moveToIndex(m_ToIndex);
+    CLine line0 = g_Lines.moveToIndexNew(m_ToIndex);
     //CLine line0 = g_Lines.moveAngle();
 
 	g_vPoint.push_back(CPoint(line0.m_begin.m_x,line0.m_begin.m_y));
