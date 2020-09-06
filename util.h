@@ -2,7 +2,7 @@
 #include <vector>
 #include <cmath>
 
-
+static int g_Id = 0;
 struct CMyPoint
 {
 	CMyPoint() {};
@@ -72,7 +72,7 @@ struct CAngle
 		m_y = y / distance;
 
 	}
-	/*CAngle(CPoint point)
+	/*CAngle(CMyPoint point)
 	{
 		CAngle(point.x, point.y);
 	}*/
@@ -85,7 +85,7 @@ struct CVec// 在angle的基础上加上长度
 	CAngle m_angle = CAngle(1, 0);
 	//CAngle m_angle(1,0);
 	float m_fLength = 0;
-	CPoint m_ang_point = CPoint(1, 1);
+	CMyPoint m_ang_point = CMyPoint(1, 1);
 	float m_x = 0;
 	float m_y = 0;
 
@@ -150,3 +150,94 @@ static bool bInAngle(CMyPoint toP, CMyPoint p1, CMyPoint p2)
 
 	return true;
 }
+
+struct CLine {
+	CLine(CMyPoint begin, CMyPoint end) {
+		m_begin = begin;
+		m_end = end;
+		m_mid = CMyPoint((m_begin.m_x + m_end.m_x) / 2, (m_end.m_y + m_end.m_y) / 2);
+		m_unitAngle.getPoints(12);
+		++g_Id;
+
+	}
+	CLine()
+	{
+		m_unitAngle.getPoints(12);
+		++g_Id;
+	}
+
+	CMyPoint m_begin;
+	CMyPoint m_end;
+	CMyPoint m_mid;
+	CAngle m_moveAng = CAngle(1.0f, 0.0f);
+	CUnitAngle m_unitAngle;
+	int m_angleCnt = 0;
+
+	void moveVec(CMyPoint p)
+	{
+		m_mid.m_x += p.m_x;
+		m_begin.m_x += p.m_x;
+		m_end.m_x += p.m_x;
+
+		m_mid.m_y += p.m_x;
+		m_begin.m_y += p.m_y;
+		m_end.m_y += p.m_y;
+	}
+
+	//CVec moveAngle(int iDistance)
+	//{
+	//	CString str;
+
+	//	int size = m_unitAngle.m_vPoint.size();
+	//	int cnt = m_angleCnt % size;
+	//	CMyPoint mp = m_unitAngle.m_vPoint[cnt];//一个单位向量，表示方向
+
+	//	/*str.Format(_T("moveAngle cnt:%d x:%6f y:%6f distance:%d\n"),
+	//		cnt, mp.m_x, mp.m_y, iDistance);
+	//	OutputDebugString(str);*/
+
+	//	++m_angleCnt;
+	//	CVec vv(mp.m_x, mp.m_y, iDistance);
+
+	//	vv.m_x = mp.m_x * iDistance; vv.m_y = mp.m_y * iDistance;
+
+	//	moveVec(vv);
+	//	return vv;
+	//}
+	//在angle的基础上加上长度
+
+	//void moveVec(CVec vec)
+	//{
+	//	int xx = (int)round(vec.m_x);
+	//	m_mid.x += xx;
+	//	m_begin.x += xx;
+	//	m_end.x += xx;
+
+	//	int yy = (int)round(vec.m_y);
+	//	m_mid.y += yy;
+	//	m_begin.y += yy;
+	//	m_end.y += yy;
+	//	//return CLine(m_begin, m_end);
+
+	//	/*CString str;
+	//	str.Format(_T("moveVec x:%6f y:%6f roundx:%d roundy:%d\n"), vec.m_x, vec.m_y, xx, yy);
+	//	OutputDebugString(str);*/
+	//}
+
+
+	void moveToPoint(CMyPoint cp)
+	{
+		m_mid = cp;
+		m_begin.m_x = cp.m_x - 0.05f;
+		m_begin.m_y = cp.m_y;
+		m_end.m_x = cp.m_x + 0.05f;
+		m_end.m_y = cp.m_y;
+	}
+
+	/*void moveRight(int iDistance)
+	{
+		m_mid.x += iDistance;
+		m_begin.x += iDistance;
+		m_end.x += iDistance;
+	}*/
+};

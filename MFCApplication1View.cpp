@@ -90,10 +90,10 @@ void CMFCApplication1View::drawLine(CDC* pDC, CLine& line)
 {
 	if (!pDC)
 		return;
-    DrawEllipse(pDC, CPoint(line.m_begin.x, line.m_begin.y));
-    DrawEllipse(pDC, CPoint(line.m_end.x ,line.m_end.y));
-	pDC->MoveTo(line.m_begin);
-	pDC->LineTo(line.m_end);
+    DrawEllipse(pDC, CPoint(line.m_begin.m_x, line.m_begin.m_y));
+    DrawEllipse(pDC, CPoint(line.m_end.m_x ,line.m_end.m_y));
+	pDC->MoveTo(CPoint(line.m_begin.m_x,line.m_begin.m_y));
+	pDC->LineTo(CPoint(line.m_end.m_x, line.m_end.m_y));
 }
 
 void CMFCApplication1View::drawLines(CDC* pDC, std::vector<CLine>& lines)
@@ -124,10 +124,10 @@ void CMFCApplication1View::OnDraw(CDC* pDC)
     drawLines(pDC, g_Lines.m_lines);
     DrawArc(pDC);
      
-    CLine line0 = g_Lines.moveAngle(m_ToIndex);
+    CLine line0 = g_Lines.moveToIndex(m_ToIndex);
     //CLine line0 = g_Lines.moveAngle();
 
-	g_vPoint.push_back(line0.m_begin);
+	g_vPoint.push_back(CPoint(line0.m_begin.m_x,line0.m_begin.m_y));
 	drawPoits(pDC, g_vPoint);
 	/*for (auto& line:g_Lines.m_lines)
 	{

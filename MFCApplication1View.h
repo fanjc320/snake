@@ -7,101 +7,18 @@
 #include <cmath>
 #include "util.h"
 
-static int g_Id = 0;
 static int g_unitNum = 32;
-struct CLine {
-	CLine(CPoint begin, CPoint end) {
-		m_begin = begin;
-		m_end = end;
-		m_mid = CPoint((m_begin.x + m_end.x) / 2, (m_end.y + m_end.y) / 2);
-		m_unitAngle.getPoints(12);
-		++g_Id;
 
-	}
-	CLine()
-	{
-		m_unitAngle.getPoints(12);
-		++g_Id;
-	}
-
-	CPoint m_begin;
-	CPoint m_end;
-	CPoint m_mid;
-	CAngle m_moveAng = CAngle(1.0f,0.0f);
-	CUnitAngle m_unitAngle;
-	int m_angleCnt = 0;
-	
-
-	void moveTo(CPoint point)
-	{
-		m_mid += point;
-		m_begin += point;
-		m_end += point;
-	}
-
-	CVec moveAngle(int iDistance)
-	{
-		CString str;
-	
-		int size = m_unitAngle.m_vPoint.size();
-		int cnt = m_angleCnt % size;
-		CMyPoint mp = m_unitAngle.m_vPoint[cnt];//一个单位向量，表示方向
-
-		/*str.Format(_T("moveAngle cnt:%d x:%6f y:%6f distance:%d\n"),
-			cnt, mp.m_x, mp.m_y, iDistance);
-		OutputDebugString(str);*/
-
-		++m_angleCnt;
-		CVec vv(mp.m_x, mp.m_y, iDistance);
-
-		vv.m_x = mp.m_x*iDistance; vv.m_y = mp.m_y *iDistance;  
-
-		moveVec(vv);
-		return vv;
-	}
-	//在angle的基础上加上长度
-	
-	void moveVec(CVec vec)
-	{
-		int xx = (int)round(vec.m_x);
-		m_mid.x += xx;
-		m_begin.x += xx;
-		m_end.x += xx;
-
-		int yy = (int)round(vec.m_y);
-		m_mid.y += yy;
-		m_begin.y += yy;
-		m_end.y += yy;
-		//return CLine(m_begin, m_end);
-
-		/*CString str;
-		str.Format(_T("moveVec x:%6f y:%6f roundx:%d roundy:%d\n"), vec.m_x, vec.m_y, xx, yy);
-		OutputDebugString(str);*/
-	}
-
-	void moveToPoint(CMyPoint cp)
-	{
-		CVec vec(cp.m_x - m_mid.x, cp.m_y - m_mid.y);
-		moveVec(vec);
-	}
-
-	void moveRight(int iDistance)
-	{
-		m_mid.x += iDistance;
-		m_begin.x += iDistance;
-		m_end.x += iDistance;
-	}
-};
 
 struct CLines {
 	CLines()
 	{
-		CPoint begin(500, 200);
+		CMyPoint begin(500, 200);
 		int iLength = 50;
-		CPoint end = begin;
+		CMyPoint end = begin;
 		for (int i = 0; i < 10; ++i)
 		{
-			CPoint end(begin.x - iLength, begin.y);
+			CMyPoint end(begin.m_x - iLength, begin.m_y);
 			CLine line(begin, end);
 			m_lines.push_back(line);
 			begin = end;
@@ -111,34 +28,36 @@ struct CLines {
 
 	std::vector<CLine> m_lines;
 	
-	void moveRight(int iDistance)
+	/*void moveRight(int iDistance)
 	{
 		for (auto& line : m_lines)
 		{
 			line.moveRight(iDistance);
 		}
-	}
+	}*/
 
 	void addLine(CLine line)
 	{
 		m_lines.push_back(line);
 	}
 
-	CLine moveAngle(int iToIndex)
+	void moveTo(CLine& line, int iToIndex)
 	{
-		//int distance = m_distance;
+
+	}
+
+	CLine moveToIndex(int iToIndex)
+	{
 		CLine& line0 = m_lines[0];
 		int iDistance = 20;
 		int size = m_unitAngle.m_vPoint.size();
 		
-		CVec mvVec = CVec(0, 0, 0);
-		//CMyPoint myP = m_unitAngle.m_vPoint[index];//当前单位向量
+		CMyPoint mvVec;
 		CString str;
 		CMyPoint myP_last;
 		bool bFlag = false;
 		for (int i=0; i < m_lines.size(); ++i)
 		{
-			//CMyPoint mp_last = m_unitAngle.m_vPoint[index_last];//上一个单位向量，表示方向
 			CLine& line = m_lines[i];
 
 			int index = 0;
@@ -166,7 +85,7 @@ struct CLines {
 			
 			if (i == 0)
 			{
-				mvVec = CVec(mp.m_x, mp.m_y, iDistance);
+				mvVec = CMyPoint(mp.m_x, mp.m_y);
 				mvVec.m_x = mp.m_x * iDistance; 
 				mvVec.m_y = mp.m_y * iDistance;
 				str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), index, mp.m_x, mp.m_y);
@@ -179,8 +98,7 @@ struct CLines {
 				CMyPoint vec_now;
 				vec_now.m_x = mp.m_x * iDistance;
 				vec_now.m_y = mp.m_y * iDistance;
-				
-				str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), index, mp.m_x, mp.m_y);
+				//str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), index, mp.m_x, mp.m_y);
 				//OutputDebugString(str);
 
 				CMyPoint now;
@@ -189,8 +107,8 @@ struct CLines {
 
 				line.moveToPoint(now);
 			}
-			myP_last.m_x = line.m_mid.x;
-			myP_last.m_y = line.m_mid.y;
+			myP_last.m_x = line.m_mid.m_x;
+			myP_last.m_y = line.m_mid.m_y;
 		}
 		if (bFlag)
 		{
