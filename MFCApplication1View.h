@@ -8,6 +8,7 @@
 #include "util.h"
 
 static int g_Id = 0;
+static int g_unitNum = 32;
 struct CLine {
 	CLine(CPoint begin, CPoint end) {
 		m_begin = begin;
@@ -105,7 +106,7 @@ struct CLines {
 			m_lines.push_back(line);
 			begin = end;
 		}
-		m_unitAngle.getPoints(m_unitNum);
+		m_unitAngle.getPoints(g_unitNum);
 	}
 
 	std::vector<CLine> m_lines;
@@ -123,9 +124,7 @@ struct CLines {
 		m_lines.push_back(line);
 	}
 
-	
-
-	CLine moveAngle(CMyPoint toVec)
+	CLine moveAngle(int iToIndex)
 	{
 		//int distance = m_distance;
 		CLine& line0 = m_lines[0];
@@ -156,10 +155,10 @@ struct CLines {
 					index, index_next, mp.m_x, mp.m_y, mp_next.m_x, mp_next.m_y);
 				OutputDebugString(str);*/
 
-				if (bInAngle(toVec, mp, mp_next))
+				if (index == iToIndex)
 				{
-					str.Format(_T("===============moveAngle index:%d  tovx:%6f tovy:%6f  mpx:%6f mpy:%6f mpnx:%6f mpny:%6f===============\n"), 
-						index, toVec.m_x, toVec.m_y, mp.m_x, mp.m_y, mp_next.m_x, mp_next.m_y);
+					str.Format(_T("===============moveAngle index:%d toindex:%d mpx:%6f mpy:%6f mpnx:%6f mpny:%6f===============\n"), 
+						index, iToIndex, mp.m_x, mp.m_y, mp_next.m_x, mp_next.m_y);
 					OutputDebugString(str);
 					bFlag = true;
 				}
@@ -206,7 +205,6 @@ struct CLines {
 	
 	int m_distance = 50;
 	CUnitAngle m_unitAngle;
-	int m_unitNum = 32;//2的n次方，可以把单位圆的分割线和坐标重合的其中一种方式
 	int m_Angle = 5;//5个单位向量
 	int m_moveNum = 0;
 };
@@ -268,6 +266,8 @@ public:
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	CMyPoint m_Direction;
+	int m_ToIndex;
+	
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 };
 
