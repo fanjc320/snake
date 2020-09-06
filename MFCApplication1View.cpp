@@ -125,6 +125,7 @@ void CMFCApplication1View::OnDraw(CDC* pDC)
     DrawArc(pDC);
      
     CLine line0 = g_Lines.moveAngle(m_Direction);
+    //CLine line0 = g_Lines.moveAngle();
 
 	g_vPoint.push_back(line0.m_begin);
 	drawPoits(pDC, g_vPoint);
@@ -138,18 +139,15 @@ void CMFCApplication1View::OnDraw(CDC* pDC)
     //DrawAngleArc(pDC);
     std::cout << "--" << std::endl;
 
-    wchar_t a[MAX_PATH] = { 0 };
+    /*wchar_t a[MAX_PATH] = { 0 };
     wsprintf(a, L"x:%d y:%d \n", line0.m_begin.x, line0.m_begin.y);
-    OutputDebugString(a);
+    OutputDebugString(a);*/
 
     Sleep(100);
     pDoc->UpdateAllViews(this);
     Invalidate();
-
     
 }
-
-
 
 
 // CMFCApplication1View 打印
@@ -357,7 +355,7 @@ void CMFCApplication1View::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
     // TODO: 在此添加消息处理程序代码和/或调用默认值
 
     CView::OnKeyUp(nChar, nRepCnt, nFlags);
-	if (nChar == 87)//w
+	if (nChar == 83)//w
 	{
 		//MessageBox(L"ww");
 		m_Direction.m_x = 0.0f;
@@ -368,7 +366,7 @@ void CMFCApplication1View::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 		m_Direction.m_x = -1.0f;
 		m_Direction.m_y = 0.0f;
 	}
-	else if (nChar == 83)//s
+	else if (nChar == 87)//s
 	{
 		m_Direction.m_x = 0.0f;
 		m_Direction.m_y = -1.0f;
@@ -378,9 +376,19 @@ void CMFCApplication1View::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 		m_Direction.m_x = 1.0f;
 		m_Direction.m_y = 0.0f;
 	}
-	CString str;
-	str.Format(_T("OnKeyUp  ==================================================== \n") );
-	OutputDebugString(str);
+
+    //test inAngle
+   /* for (int i = -2;i<10;++i)
+    {
+        CMyPoint toP(i, 2);
+        CMyPoint p1(3, 1);
+        CMyPoint p2(1, 3);
+        bool bIn = CLines::bInAngle(toP,p1,p2);
+        CString str;
+        str.Format(_T("OnKeyUp  =============================================== x:%d bIn:%d  \n"),i,bIn);
+        OutputDebugString(str);
+    }*/
+    
 }
 
 

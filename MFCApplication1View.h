@@ -8,6 +8,12 @@
 
 struct CMyPoint
 {
+	CMyPoint() {};
+	CMyPoint(float x, float y)
+	{
+		m_x = x;
+		m_y = y;
+	}
 	float m_x = 0.0f;
 	float m_y = 0.0f;
 };
@@ -156,11 +162,12 @@ struct CLine {
 		int cnt = m_angleCnt % size;
 		CMyPoint mp = m_unitAngle.m_vPoint[cnt];//一个单位向量，表示方向
 
-		str.Format(_T("moveAngle cnt:%d x:%6f y:%6f distance:%d\n"),
+		/*str.Format(_T("moveAngle cnt:%d x:%6f y:%6f distance:%d\n"),
 			cnt, mp.m_x, mp.m_y, iDistance);
-		OutputDebugString(str);
+		OutputDebugString(str);*/
+
 		++m_angleCnt;
-		CVec vv(mp.m_x,mp.m_y, iDistance);
+		CVec vv(mp.m_x, mp.m_y, iDistance);
 
 		vv.m_x = mp.m_x*iDistance; vv.m_y = mp.m_y *iDistance;  
 
@@ -182,9 +189,9 @@ struct CLine {
 		m_end.y += yy;
 		//return CLine(m_begin, m_end);
 
-		CString str;
+		/*CString str;
 		str.Format(_T("moveVec x:%6f y:%6f roundx:%d roundy:%d\n"), vec.m_x, vec.m_y, xx, yy);
-		OutputDebugString(str);
+		OutputDebugString(str);*/
 	}
 
 	void moveToPoint(CMyPoint cp)
@@ -205,7 +212,7 @@ struct CLines {
 	CLines()
 	{
 		CPoint begin(500, 200);
-		int iLength = 20;
+		int iLength = 50;
 		CPoint end = begin;
 		for (int i = 0; i < 10; ++i)
 		{
@@ -232,46 +239,83 @@ struct CLines {
 		m_lines.push_back(line);
 	}
 
+	//向量toP是否在p1和p2夹角内，即是否可被p1和p2组合
+	static bool bInAngle(CMyPoint toP, CMyPoint p1, CMyPoint p2)
+	{
+		//https://wenku.baidu.com/view/f69f660976c66137ee061977.html
+		//a*p1 + b*p2 = toP, a>=0,b>=0 则说明toP在p1和p2夹角以内
+		//a*p1.m_x+b*p2.m_x = toP.m_x;
+		//a*p1.m_y+b*p2.m_y = toP.m_y;
+
+		//a*p1.m_x+b*p2.m_x - toP.m_x = 0;
+		//a*p1.m_y+b*p2.m_y - toP.m_y = 0;
+		//A1x+B1y+C1=0
+		//A2x+B2y+C2=0
+		//x=(B1C2-B2C1)/(A1B2-A2B1);y=(C1A2-C2A1)/(A1B2-A2B1);
+		float A1 = p1.m_x; float B1 = p2.m_x; float C1 = -toP.m_x;
+		float A2 = p1.m_y; float B2 = p2.m_y; float C2 = -toP.m_y;
+		float fGap = 0.0001f;
+		//a和b都>=0,则存在
+		if ( A1 * B2 - A2 * B1 < fGap || A1 * B2 - A2 * B1 < fGap)
+		{
+			return false;
+		}
+		float a = (B1*C2 - B2*C1) / (A1*B2 - A2*B1);
+		float b = (C1*A2 - C2*A1) / (A1*B2 - A2*B1);
+		if (a<0 || b<0)
+		{
+			return false;
+		}
+		
+		return true;
+	}
+
 	CLine moveAngle(CMyPoint toVec)
 	{
 		//int distance = m_distance;
 		CLine& line0 = m_lines[0];
-		int iDistance = m_distance;
+		int iDistance = 20;
 		int size = m_unitAngle.m_vPoint.size();
-		//int index = m_moveNum % size;
+		
 		CVec mvVec = CVec(0, 0, 0);
 		//CMyPoint myP = m_unitAngle.m_vPoint[index];//当前单位向量
 		CString str;
 		CMyPoint myP_last;
+		bool bFlag = false;
 		for (int i=0; i < m_lines.size(); ++i)
 		{
-			CMyPoint mp = m_unitAngle.m_vPoint[m_index];//一个单位向量，表示方向
-			str.Format(_T("moveAngle 0000 index:%d vec_x:%6f vec_y:%6f x:%6f y:%6f \n"), m_index, toVec.m_x, toVec.m_y, mp.m_x, mp.m_y);
-			OutputDebugString(str);
-			/*if (abs(toVec.m_x * mp.m_y - toVec.m_y * mp.m_x) < 0.01f)
-			{
-				str.Format(_T("moveAngle <<< index:%d vec_x:%6f vec_y:%6f x:%6f y:%6f \n"), m_index, toVec.m_x, toVec.m_y, mp.m_x, mp.m_y);
-				OutputDebugString(str);
-			}
-			else
-			{*/
-				if (m_moveNum + m_Angle - i > 0)
-					m_index = (m_moveNum + m_Angle - i) % size;
-				++m_moveNum;
-			//}
-
-			
-
-			mvVec = CVec(mp.m_x, mp.m_y, iDistance);
-			mvVec.m_x = mp.m_x * iDistance;
-			mvVec.m_y = mp.m_y * iDistance;
-			
-			
+			//CMyPoint mp_last = m_unitAngle.m_vPoint[index_last];//上一个单位向量，表示方向
 			CLine& line = m_lines[i];
+
+			int index = 0;
+			int index_next = 0;
+			CMyPoint mp;
+			if (m_moveNum + m_Angle - i > 0)
+			{
+				index = (m_moveNum + m_Angle - i) % size;
+				index_next = (m_moveNum + m_Angle - i + 1) % size;
+				mp = m_unitAngle.m_vPoint[index];//一个单位向量，表示方向
+				CMyPoint mp_next = m_unitAngle.m_vPoint[index_next];//一个单位向量，表示方向
+
+				/*str.Format(_T("moveAngle index:%d index_next:%d mpx:%6f mpy:%6f mpnx:%6f mpny:%6f \n"), 
+					index, index_next, mp.m_x, mp.m_y, mp_next.m_x, mp_next.m_y);
+				OutputDebugString(str);*/
+
+				if (bInAngle(toVec, mp, mp_next))
+				{
+					str.Format(_T("===============moveAngle index:%d  tovx:%6f tovy:%6f  mpx:%6f mpy:%6f mpnx:%6f mpny:%6f===============\n"), 
+						index, toVec.m_x, toVec.m_y, mp.m_x, mp.m_y, mp_next.m_x, mp_next.m_y);
+					OutputDebugString(str);
+					bFlag = true;
+				}
+			}
+			
 			if (i == 0)
 			{
-				
-				str.Format(_T("moveAngle i=0 index:%d x:%6f y:%6f \n"), m_index, mp.m_x, mp.m_y);
+				mvVec = CVec(mp.m_x, mp.m_y, iDistance);
+				mvVec.m_x = mp.m_x * iDistance; 
+				mvVec.m_y = mp.m_y * iDistance;
+				str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), index, mp.m_x, mp.m_y);
 				OutputDebugString(str);
 
 				line.moveVec(mvVec);
@@ -281,10 +325,9 @@ struct CLines {
 				CMyPoint vec_now;
 				vec_now.m_x = mp.m_x * iDistance;
 				vec_now.m_y = mp.m_y * iDistance;
-				 
-
-				str.Format(_T("moveAngle i!=0 index:%d x:%6f y:%6f \n"), m_index, mp.m_x, mp.m_y);
-				OutputDebugString(str);
+				
+				str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), index, mp.m_x, mp.m_y);
+				//OutputDebugString(str);
 
 				CMyPoint now;
 				now.m_x = myP_last.m_x - vec_now.m_x;
@@ -295,13 +338,20 @@ struct CLines {
 			myP_last.m_x = line.m_mid.x;
 			myP_last.m_y = line.m_mid.y;
 		}
-		
+		if (bFlag)
+		{
+
+		}
+		else
+		{
+			++m_moveNum;
+		}
 		return line0;
 	}
-	int m_index = 0;
-	int m_distance = 30;
+	
+	int m_distance = 50;
 	CUnitAngle m_unitAngle;
-	int m_unitNum = 30;//单位圆30等分
+	int m_unitNum = 32;//2的n次方，可以把单位圆的分割线和坐标重合的其中一种方式
 	int m_Angle = 5;//5个单位向量
 	int m_moveNum = 0;
 };
