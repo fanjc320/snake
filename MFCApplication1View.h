@@ -45,6 +45,31 @@ struct CLines {
 	{
 
 	}
+	void getTravelDirect(int index1, int index2, std::vector<int> vIndexs)//单位向量的集合,按顺序，正序或逆序
+	{
+		bool bReverse = false;
+		if (abs(index1-index2) > g_unitNum/2 )
+		{
+			bReverse = true;
+		}
+		int minIdx = min(index1, index2);
+		int maxIdx = max(index1, index2);
+		
+		for (int i = index1;i!=index2;++i)
+		{
+			vIndexs.push_back(i);
+			if (index1<=index2)
+			{
+				++i;
+			}
+			else
+			{
+				--i;
+			}
+			
+		}
+
+	}
 
 	CLine moveToIndex(int iToIndex)
 	{
@@ -92,6 +117,8 @@ struct CLines {
 				OutputDebugString(str);
 
 				line.moveVec(mvVec);
+				myP_last.m_x = mvVec.m_x;
+				myP_last.m_y = mvVec.m_y;
 			}
 			else 
 			{
