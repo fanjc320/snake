@@ -376,18 +376,6 @@ void CMFCApplication1View::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 		m_Direction.m_x = 1.0f;
 		m_Direction.m_y = 0.0f;
 	}
-
-    //test inAngle
-   /* for (int i = -2;i<10;++i)
-    {
-        CMyPoint toP(i, 2);
-        CMyPoint p1(3, 1);
-        CMyPoint p2(1, 3);
-        bool bIn = CLines::bInAngle(toP,p1,p2);
-        CString str;
-        str.Format(_T("OnKeyUp  =============================================== x:%d bIn:%d  \n"),i,bIn);
-        OutputDebugString(str);
-    }*/
     
 }
 
