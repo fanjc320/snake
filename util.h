@@ -245,7 +245,7 @@ struct CNode {
 	}
 
 	//头部节点行为，方向不断靠近,这里可以每一帧调用一次
-	void toDirection(int iToIndex)//toIndex 和 m_curIndex 要保证都是非负数
+	void toIndex(int iToIndex)//toIndex 和 m_curIndex 要保证都是非负数
 	{
 		checkIndex(iToIndex);
 		checkIndex(m_curIndex);
@@ -485,5 +485,103 @@ struct CLines {
 
 
 		return line0;
+	}
+};
+
+struct CLinesNew {
+	CLinesNew()
+	{
+		CMyPoint begin(500, 200);
+		int iLength = 8;
+		for (int i = 0; i < 50; ++i)
+		{
+			begin.m_x -= -iLength;
+			CNode node(begin);
+			
+			m_nodes.push_back(node);
+		}
+	}
+
+	std::vector<CNode> m_nodes;
+
+	/*void addLine(CLine line)
+	{
+		m_lines.push_back(line);
+	}*/
+
+	int m_distance = 50;
+
+	int m_Angle = 5;//5个单位向量
+	int m_CurIndex = 0;// 控制头部转弯到第几个index
+	int m_moveNum = 0;
+
+	//
+	CNode moveToIndexNew(int iToIndex)
+	{
+		CNode& head = m_nodes[0];
+		int iDistance = 10;//转弯
+		int iDistance1 = 12;//直行
+		int size = g_unitAngle.m_vPoint.size();
+
+		CMyPoint mvVec;
+		CString str;
+		CMyPoint myP_last;
+		bool bFlag = false;
+
+		if (iToIndex < m_CurIndex)
+		{
+			iToIndex += g_unitNum;
+		}
+		if (iToIndex == m_CurIndex)
+		{
+			//已到达目的转向，
+		}
+		else if (iToIndex - m_CurIndex < g_unitNum / 2)
+		{
+			++m_CurIndex;
+		}
+		else
+		{
+			--m_CurIndex;
+		}
+
+		m_CurIndex = m_CurIndex % g_unitNum;
+
+		for (int i = 0; i < m_nodes.size(); ++i)
+		{
+			CNode& node = m_nodes[i];
+			CMyPoint mp;
+
+			if (i == 0)
+			{
+				mp = g_unitAngle.m_vPoint[m_CurIndex];//一个单位向量，表示方向
+				mvVec = CMyPoint(mp.m_x, mp.m_y);
+				mvVec.m_x = mp.m_x * iDistance;
+				mvVec.m_y = mp.m_y * iDistance;
+				str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), m_CurIndex, mp.m_x, mp.m_y);
+				OutputDebugString(str);
+
+				node.moveVec(mvVec);
+				myP_last.m_x = mvVec.m_x;
+				myP_last.m_y = mvVec.m_y;
+			}
+			else
+			{
+				CMyPoint vec_now;
+				vec_now.m_x = mp.m_x * iDistance;
+				vec_now.m_y = mp.m_y * iDistance;
+
+				CMyPoint now;
+				now.m_x = myP_last.m_x - vec_now.m_x;
+				now.m_y = myP_last.m_y - vec_now.m_y;
+
+				node.moveToPoint(now);
+			}
+			myP_last.m_x = node.m_point.m_x;
+			myP_last.m_y = node.m_point.m_y;
+		}
+
+
+		return head;
 	}
 };
