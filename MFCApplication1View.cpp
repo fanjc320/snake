@@ -132,6 +132,8 @@ void CMFCApplication1View::OnDraw(CDC* pDC)
 
 	g_vPoint.push_back(CPoint(line0.m_begin.m_x,line0.m_begin.m_y));
 	drawPoits(pDC, g_vPoint);
+
+
 	/*for (auto& line:g_Lines.m_lines)
 	{
 		g_vPoint.push_back(line.m_begin);
@@ -384,6 +386,14 @@ void CMFCApplication1View::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
         m_ToIndex = 0;
 	}
     
+        /*CLine line;
+        line.m_curIndex = 2;
+        line.toDirection(10);
+        line.toDirection(30);
+        line.m_curIndex = 30;
+        line.toDirection(20);
+        line.toDirection(2);*/
+   
 }
 
 

@@ -47,6 +47,14 @@ struct CUnitAngle
 static CUnitAngle g_unitAngle;
 static int g_unitNum = 32;
 
+static void checkIndex(int iIndex)
+{
+	if (iIndex < 0 || iIndex >= g_unitNum)
+	{
+		MessageBox(NULL,L"index error!", L"hello", MB_OK);
+	}
+}
+
 //单位向量，用来表示角度
 struct CAngle
 {
@@ -204,68 +212,55 @@ struct CLine {
 	{
 		m_curIndex = index;
 	}
-
+	
 	//头部节点行为，方向不断靠近,这里可以每一帧调用一次
-	void toDirection(int toIndex)//toIndex 和 m_curIndex 要保证都是非负数
+	void toDirection(int iToIndex)//toIndex 和 m_curIndex 要保证都是非负数
 	{
-		m_curIndex = m_curIndex % g_unitNum;
-		toIndex = toIndex % g_unitNum;
-		if (abs(m_curIndex - toIndex)<g_unitNum/2)
+		checkIndex(iToIndex);
+		checkIndex(m_curIndex);
+		if (iToIndex == m_curIndex)
 		{
-
+			return;//已到达目的转向，
 		}
+		/*CString str;
+		str.Format(_T("===============toDirection  curindex:%d toindex:%d \n"), m_curIndex, iToIndex);
+		OutputDebugString(str);*/
+
+		int iA = 0;
+		int iB = 0;
+		if (m_curIndex < iToIndex)
+		{
+			iA = iToIndex - m_curIndex;
+			m_curIndex += g_unitNum;
+			iB = m_curIndex - iToIndex;
+		}
+		else
+		{
+			iB = m_curIndex - iToIndex;
+			iToIndex += g_unitNum;
+			iA = iToIndex - m_curIndex;
+		}
+		
+		if (iA < iB)
+		{
+			++m_curIndex;
+			/*str.Format(_T("===============toDirection ++++ \n"));
+			OutputDebugString(str);*/
+		}
+		else
+		{
+			--m_curIndex;
+			/*str.Format(_T("===============toDirection ----- \n"));
+			OutputDebugString(str);*/
+		}
+		if (m_curIndex < 0)
+		{
+			m_curIndex += g_unitNum;
+		}
+
+		m_curIndex = m_curIndex % g_unitNum;
 	}
 	
-
-	//CVec moveAngle(int iDistance)
-	//{
-	//	CString str;
-
-	//	int size = g_unitAngle.m_vPoint.size();
-	//	int cnt = m_angleCnt % size;
-	//	CMyPoint mp = g_unitAngle.m_vPoint[cnt];//一个单位向量，表示方向
-
-	//	/*str.Format(_T("moveAngle cnt:%d x:%6f y:%6f distance:%d\n"),
-	//		cnt, mp.m_x, mp.m_y, iDistance);
-	//	OutputDebugString(str);*/
-
-	//	++m_angleCnt;
-	//	CVec vv(mp.m_x, mp.m_y, iDistance);
-
-	//	vv.m_x = mp.m_x * iDistance; vv.m_y = mp.m_y * iDistance;
-
-	//	moveVec(vv);
-	//	return vv;
-	//}
-	//在angle的基础上加上长度
-
-	//void moveVec(CVec vec)
-	//{
-	//	int xx = (int)round(vec.m_x);
-	//	m_mid.x += xx;
-	//	m_begin.x += xx;
-	//	m_end.x += xx;
-
-	//	int yy = (int)round(vec.m_y);
-	//	m_mid.y += yy;
-	//	m_begin.y += yy;
-	//	m_end.y += yy;
-	//	//return CLine(m_begin, m_end);
-
-	//	/*CString str;
-	//	str.Format(_T("moveVec x:%6f y:%6f roundx:%d roundy:%d\n"), vec.m_x, vec.m_y, xx, yy);
-	//	OutputDebugString(str);*/
-	//}
-
-
-	
-
-	/*void moveRight(int iDistance)
-	{
-		m_mid.x += iDistance;
-		m_begin.x += iDistance;
-		m_end.x += iDistance;
-	}*/
 };
 
 
@@ -285,14 +280,6 @@ struct CLines {
 	}
 
 	std::vector<CLine> m_lines;
-
-	/*void moveRight(int iDistance)
-	{
-		for (auto& line : m_lines)
-		{
-			line.moveRight(iDistance);
-		}
-	}*/
 
 	void addLine(CLine line)
 	{
