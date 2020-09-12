@@ -72,6 +72,8 @@ CMFCApplication1View::CMFCApplication1View() noexcept
 
     m_Direction.m_x = 1.0f;
     m_Direction.m_y = 0.0f;
+
+    g_unitAngle.getPoints(g_unitNum);
 }
 
 CMFCApplication1View::~CMFCApplication1View()
