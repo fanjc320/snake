@@ -213,6 +213,37 @@ struct CLine {
 		m_curIndex = index;
 	}
 	
+};
+
+struct CNode {
+	CNode(CMyPoint point) {
+		m_point = point;
+	}
+
+	CMyPoint m_point;
+	int m_curIndex;//当前方向index
+
+	void moveToPoint(CMyPoint cp)
+	{
+		m_point = cp;
+	}
+	void moveVec(CMyPoint cp)
+	{
+		m_point.m_x += cp.m_x;
+		m_point.m_y += cp.m_y;
+	}
+
+	void moveForward(float fDistance)
+	{
+		CMyPoint pp = g_unitAngle.getDirect(m_curIndex);
+		moveVec(CMyPoint(pp.m_x * fDistance, pp.m_y * fDistance));
+	}
+
+	void setIndex(int index)
+	{
+		m_curIndex = index;
+	}
+
 	//头部节点行为，方向不断靠近,这里可以每一帧调用一次
 	void toDirection(int iToIndex)//toIndex 和 m_curIndex 要保证都是非负数
 	{
@@ -240,7 +271,7 @@ struct CLine {
 			iToIndex += g_unitNum;
 			iA = iToIndex - m_curIndex;
 		}
-		
+
 		if (iA < iB)
 		{
 			++m_curIndex;
@@ -260,9 +291,8 @@ struct CLine {
 
 		m_curIndex = m_curIndex % g_unitNum;
 	}
-	
-};
 
+};
 
 struct CLines {
 	CLines()

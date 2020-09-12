@@ -88,15 +88,15 @@ BOOL CMFCApplication1View::PreCreateWindow(CREATESTRUCT& cs)
 	return CView::PreCreateWindow(cs);
 }
 
-void CMFCApplication1View::drawLine(CDC* pDC, CLine& line)
-{
-	if (!pDC)
-		return;
-    DrawEllipse(pDC, CPoint(line.m_begin.m_x, line.m_begin.m_y));
-    DrawEllipse(pDC, CPoint(line.m_end.m_x ,line.m_end.m_y));
-	pDC->MoveTo(CPoint(line.m_begin.m_x,line.m_begin.m_y));
-	pDC->LineTo(CPoint(line.m_end.m_x, line.m_end.m_y));
-}
+//void CMFCApplication1View::drawLine(CDC* pDC, CLine& line)
+//{
+//	if (!pDC)
+//		return;
+//    DrawEllipse(pDC, CPoint(line.m_begin.m_x, line.m_begin.m_y));
+//    DrawEllipse(pDC, CPoint(line.m_end.m_x ,line.m_end.m_y));
+//	pDC->MoveTo(CPoint(line.m_begin.m_x,line.m_begin.m_y));
+//	pDC->LineTo(CPoint(line.m_end.m_x, line.m_end.m_y));
+//}
 
 //void CMFCApplication1View::drawLines(CDC* pDC, std::vector<CLine>& lines)
 //{
