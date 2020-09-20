@@ -35,7 +35,8 @@ END_MESSAGE_MAP()
 
 // CMFCApplication1View 构造/析构
 
-CLines g_Lines;
+//CLines g_Lines;
+CLinesNew g_Lines;
 
 CMFCApplication1View::CMFCApplication1View() noexcept
 {
@@ -122,8 +123,23 @@ void CMFCApplication1View::drawLines(CDC* pDC, std::vector<CLine>& lines)
     
 }
 
+void CMFCApplication1View::drawPoits(CDC* pDC, std::vector<CPoint> points)
+{
+    if (!pDC)
+        return;
+    if (points.size() == 0)
+    {
+        return;
+    }
+    pDC->MoveTo(points[0].x, points[0].y);         //设置DC当前点
+    for (int i = 1; i < points.size(); ++i)
+    {
+        pDC->LineTo(points[i].x, points[i].y);            //绘制直线
+    }
 
-CLines g_headLines;
+}
+
+//CLines g_headLines;
 std::vector<CPoint> g_vPoint;
 // CMFCApplication1View 绘图 
 
@@ -137,14 +153,14 @@ void CMFCApplication1View::OnDraw(CDC* pDC)
     }
  
 	
-    drawLines(pDC, g_Lines.m_lines);
-    DrawArc(pDC);
+    /*drawNodes(pDC, g_Lines.m_nodes);
+    DrawArc(pDC);*/
      
-    //CLine line0 = g_Lines.moveToIndex(m_ToIndex);
-    CLine line0 = g_Lines.moveToIndexNew(m_ToIndex);
-    //CLine line0 = g_Lines.moveAngle();
+    //CLine line0 = g_Lines.moveToIndexNew(m_ToIndex);
+    
+    CNode head = g_Lines.moveToIndexNew1(m_ToIndex);
 
-	g_vPoint.push_back(CPoint(line0.m_begin.m_x,line0.m_begin.m_y));
+	g_vPoint.push_back(CPoint(head.m_point.m_x, head.m_point.m_y));
 	drawPoits(pDC, g_vPoint);
 
 
@@ -156,7 +172,6 @@ void CMFCApplication1View::OnDraw(CDC* pDC)
 
     
     //DrawAngleArc(pDC);
-    std::cout << "--" << std::endl;
 
     /*wchar_t a[MAX_PATH] = { 0 };
     wsprintf(a, L"x:%d y:%d \n", line0.m_begin.x, line0.m_begin.y);
@@ -222,22 +237,6 @@ void CMFCApplication1View::DrawLine(CDC* pDC)
         pDC->LineTo(170, 20 + i * 15);            //绘制直线
     }
     pDC->SelectObject(oldPen);       //回复DC原画笔
-}
-
-
-void CMFCApplication1View::drawPoits(CDC* pDC, std::vector<CPoint> points)
-{
-    if (!pDC)
-        return;
-    if (points.size()==0)
-    {
-        return;
-    }
-    pDC->MoveTo(points[0].x,points[0].y);         //设置DC当前点
-    for (int i=1;i<points.size();++i)
-    {
-        pDC->LineTo(points[i].x,points[i].y);            //绘制直线
-    }
 }
 
 //绘制折线

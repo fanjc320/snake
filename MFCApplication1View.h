@@ -67,7 +67,7 @@ public:
 	afx_msg void OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags);
 	virtual BOOL PreTranslateMessage(MSG* pMsg);
 	CMyPoint m_Direction;
-	int m_ToIndex;
+	int m_ToIndex = 0;
 	
 	afx_msg void OnChar(UINT nChar, UINT nRepCnt, UINT nFlags);
 };
