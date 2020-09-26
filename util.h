@@ -3,6 +3,7 @@
 #include <cmath>
 
 //static int g_Id = 0;
+static bool g_bTurning = false;//转向中 
 
 struct CMyPoint
 {
@@ -221,7 +222,7 @@ struct CNode {
 	}
 
 	CMyPoint m_point;
-	int m_curIndex;//当前方向index
+	int m_curIndex = 0;//当前方向index
 	int m_IndexGap = 1;
 
 	void moveToPoint(CMyPoint cp)
@@ -238,9 +239,9 @@ struct CNode {
 	{
 		CMyPoint pp = g_unitAngle.getDirect(m_curIndex);
 		moveVec(CMyPoint(pp.m_x * fDistance, pp.m_y * fDistance));
-		CString str;
+		/*CString str;
 		str.Format(_T("moveForward curindex:%d ppx:%f ppy:%f\n"), m_curIndex, pp.m_x, pp.m_y);
-		OutputDebugString(str);
+		OutputDebugString(str);*/
 	}
 
 	void setIndex(int index)
@@ -249,17 +250,17 @@ struct CNode {
 	}
 
 	//头部节点行为，方向不断靠近,这里可以每一帧调用一次
-	void toIndex(int iToIndex)//toIndex 和 m_curIndex 要保证都是非负数
+	bool toIndex(int iToIndex)//toIndex 和 m_curIndex 要保证都是非负数
 	{
 		checkIndex(iToIndex);
 		checkIndex(m_curIndex);
 		if (iToIndex == m_curIndex)
 		{
-			return;//已到达目的转向，
+			return true;//已到达目的转向，
 		}
-		/*CString str;
-		str.Format(_T("===============toDirection  curindex:%d toindex:%d \n"), m_curIndex, iToIndex);
-		OutputDebugString(str);*/
+		CString str;
+		str.Format(_T("==================================================toIndex  curindex:%d toindex:%d \n"), m_curIndex, iToIndex);
+		OutputDebugString(str);
 
 		int iA = 0;
 		int iB = 0;
@@ -279,21 +280,23 @@ struct CNode {
 		if (iA < iB)
 		{
 			m_curIndex += m_IndexGap;
-			/*str.Format(_T("===============toDirection ++++ \n"));
-			OutputDebugString(str);*/
+			str.Format(_T("===============toIndex  curindex:%d ++++  \n"), m_curIndex);
+			OutputDebugString(str);
 		}
 		else
 		{
 			m_curIndex -= m_IndexGap;
-			/*str.Format(_T("===============toDirection ----- \n"));
-			OutputDebugString(str);*/
+			str.Format(_T("===============toIndex  curindex:%d ---- \n"), m_curIndex);
+			OutputDebugString(str);
 		}
+
 		if (m_curIndex < 0)
 		{
 			m_curIndex += g_unitNum;
 		}
 
 		m_curIndex = m_curIndex % g_unitNum;
+		return false;
 	}
 
 };
@@ -595,23 +598,41 @@ struct CLinesNew {
 		CString str;
 		CMyPoint myP_last;
 		bool bFlag = false;
+		if (iToIndex==0)
+		{
+			CString str;
+			str.Format(_T("moveToIndexNew1 0000000000 \n"));
+			OutputDebugString(str);
+		}
+		else
+		{
+			CString str;
+			str.Format(_T("moveToIndexNew1 1111111111 \n"));
+			OutputDebugString(str);
+		}
+		head.moveForward(10);
+		/*if (!g_bTurning)
+		{*/
+			//head.m_curIndex = iToIndex;
+			//g_bTurning = true;
+			if (iToIndex!= head.m_curIndex)
+			{
+				bool bTurned = head.toIndex(iToIndex);
+			}
+			
+		/*	if (bTurned)
+			{
+				g_bTurning = false;
+			}
+		}*/
+		
 
-		for (int i = 0; i < m_nodes.size(); ++i)
+		for (int i = 1; i < m_nodes.size(); ++i)
 		{
 			CNode& node = m_nodes[i];
 			CMyPoint mp;
-
-			if (i == 0)
-			{
-				str.Format(_T("moveToIndexNew1 toindex:%d  curindex:%d \n"), iToIndex, m_CurIndex);
-				OutputDebugString(str);
-				node.m_curIndex = iToIndex;
-				node.toIndex(m_CurIndex);
-				node.moveForward(10);
-			}
-			else
-			{
-				CMyPoint vec_now;
+			 
+				/*CMyPoint vec_now;
 				vec_now.m_x = mp.m_x * iDistance;
 				vec_now.m_y = mp.m_y * iDistance;
 
@@ -619,8 +640,8 @@ struct CLinesNew {
 				now.m_x = myP_last.m_x - vec_now.m_x;
 				now.m_y = myP_last.m_y - vec_now.m_y;
 
-				node.moveToPoint(now);
-			}
+				node.moveToPoint(now);*/
+			 
 			myP_last.m_x = node.m_point.m_x;
 			myP_last.m_y = node.m_point.m_y;
 		}

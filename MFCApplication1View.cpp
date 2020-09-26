@@ -164,11 +164,11 @@ void CMFCApplication1View::OnDraw(CDC* pDC)
 	drawPoits(pDC, g_vPoint);
 
 
-	/*for (auto& line:g_Lines.m_lines)
+	for (auto& node : g_Lines.m_nodes)
 	{
-		g_vPoint.push_back(line.m_begin);
+		g_vPoint.push_back(CPoint(node.m_point.m_x,node.m_point.m_y));
 		drawPoits(pDC, g_vPoint);
-	}*/
+	}
 
     
     //DrawAngleArc(pDC);
