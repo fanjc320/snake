@@ -4,6 +4,7 @@
 
 //static int g_Id = 0;
 static bool g_bTurning = false;//转向中 
+static float g_NodeDistance = 12.0f;//node之间的直行距离，或者叫初始距离
 
 struct CMyPoint
 {
@@ -46,13 +47,13 @@ struct CUnitAngle
 	}
 };
 static CUnitAngle g_unitAngle;
-static int g_unitNum = 64;
+static int g_unitNum = 128;
 
 static void checkIndex(int iIndex)
 {
 	if (iIndex < 0 || iIndex >= g_unitNum)
 	{
-		MessageBox(NULL,L"index error!", L"hello", MB_OK);
+		MessageBox(NULL, L"index error!", L"hello", MB_OK);
 	}
 }
 
@@ -213,7 +214,7 @@ struct CLine {
 	{
 		m_curIndex = index;
 	}
-	
+
 };
 
 struct CNode {
@@ -223,7 +224,7 @@ struct CNode {
 
 	CMyPoint m_point;
 	int m_curIndex = 0;//当前方向index
-	int m_IndexGap = 1;
+	int m_IndexGap = 4;
 
 	void moveToPoint(CMyPoint cp)
 	{
@@ -298,213 +299,46 @@ struct CNode {
 		m_curIndex = m_curIndex % g_unitNum;
 		return false;
 	}
+	
+	//...->D->C->B-A
+	//当前一节点与本节点有运动角度差别(A是前一节点，B是后一节点，A向着目标index运动，一次运动角度为m_IndexGap个index,B运动(m_IndexGap-1)个角度),
+	//B的运动没有A转向那么大,可以产生抄近路的效果，由此，B和A运动距离相同或者更大的情况下，B和A的相对位置会更近,造成蛇身的缩短效果
+	//当A的运动角度为突然由m_IndexGap变为0，那么B节点由(m_IndexGap-1)进入0，然后进入完全模仿A的过程,即toPreNode
+	//C在追逐B的过程，每次转向(m_IndexGap-2）个角度，最后也是由(m_IndexGap-2）进入0
+	//D在追逐C的过程，每次转向(m_IndexGap-3）个角度，最后也是由(m_IndexGap-3）进入0
+	//...当m_IndexGap-n == 0 ，没有转向，只有纯模仿前一节点，即toPreNode
+	//也就是说，头部节点的每次转动index最大，后面的节点转动尺度依次递减到0
+	//后面节点每次转向角度虽然小，但比前一节点提早进入，较晚退出转向过程，所以转向次数更多，总角度也是360度。
+	//后面节点转向形成的圆，比前一节点更小，所以有转圈圈缩小效果
+	//这里有个问题，如果转动角度用m_IndexGap-1的形式，不好凑成360度，也就是说是问题的，要凑成360度，可能有跳变之类的
+	//所以，这里还是用向量减法
+	bool toPreArrive(CMyPoint preArrive)//前一节点移动后到达的位置
+	{
+
+		return false;
+	}
+
+	//完全模仿前一节点
+	bool toPreNode(CNode pre)
+	{
+		*this = pre;
+		return true;
+	}
 
 };
 
-//struct CLines {
-//	CLines()
-//	{
-//		CMyPoint begin(500, 200);
-//		int iLength = 8;
-//		CMyPoint end = begin;
-//		for (int i = 0; i < 50; ++i)
-//		{
-//			CMyPoint end(begin.m_x - iLength, begin.m_y);
-//			CLine line(begin, end);
-//			m_lines.push_back(line);
-//			begin = end;
-//		}
-//	}
-//
-//	std::vector<CLine> m_lines;
-//
-//	void addLine(CLine line)
-//	{
-//		m_lines.push_back(line);
-//	}
-//
-//	void moveTo(CLine& line, int iToIndex)
-//	{
-//
-//	}
-//
-//	CLine moveToIndex(int iToIndex)
-//	{
-//		CLine& line0 = m_lines[0];
-//		int iDistance = 10;
-//		int size = g_unitAngle.m_vPoint.size();
-//
-//		CMyPoint mvVec;
-//		CString str;
-//		CMyPoint myP_last;
-//		bool bFlag = false;
-//		for (int i = 0; i < m_lines.size(); ++i)
-//		{
-//			CLine& line = m_lines[i];
-//
-//			int index = 0;
-//			int index_next = 0;
-//			CMyPoint mp;
-//			if (m_moveNum + m_Angle - i > 0)
-//			{
-//				index = (m_moveNum + m_Angle - i) % size;
-//				index_next = (m_moveNum + m_Angle - i + 1) % size;
-//				mp = g_unitAngle.m_vPoint[index];//一个单位向量，表示方向
-//				CMyPoint mp_next = g_unitAngle.m_vPoint[index_next];//一个单位向量，表示方向
-//
-//				/*str.Format(_T("moveAngle index:%d index_next:%d mpx:%6f mpy:%6f mpnx:%6f mpny:%6f \n"),
-//					index, index_next, mp.m_x, mp.m_y, mp_next.m_x, mp_next.m_y);
-//				OutputDebugString(str);*/
-//
-//				if (index == iToIndex)
-//				{
-//					str.Format(_T("===============moveAngle index:%d toindex:%d mpx:%6f mpy:%6f mpnx:%6f mpny:%6f===============\n"),
-//						index, iToIndex, mp.m_x, mp.m_y, mp_next.m_x, mp_next.m_y);
-//					OutputDebugString(str);
-//					bFlag = true;
-//				}
-//			}
-//
-//			if (i == 0)
-//			{
-//				mvVec = CMyPoint(mp.m_x, mp.m_y);
-//				mvVec.m_x = mp.m_x * iDistance;
-//				mvVec.m_y = mp.m_y * iDistance;
-//				str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), index, mp.m_x, mp.m_y);
-//				OutputDebugString(str);
-//
-//				line.moveVec(mvVec);
-//				myP_last.m_x = mvVec.m_x;
-//				myP_last.m_y = mvVec.m_y;
-//			}
-//			else
-//			{
-//				CMyPoint vec_now;
-//				vec_now.m_x = mp.m_x * iDistance;
-//				vec_now.m_y = mp.m_y * iDistance;
-//				//str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), index, mp.m_x, mp.m_y);
-//				//OutputDebugString(str);
-//
-//				CMyPoint now;
-//				now.m_x = myP_last.m_x - vec_now.m_x;
-//				now.m_y = myP_last.m_y - vec_now.m_y;
-//
-//				line.moveToPoint(now);
-//			}
-//			myP_last.m_x = line.m_mid.m_x;
-//			myP_last.m_y = line.m_mid.m_y;
-//		}
-//		if (bFlag)
-//		{
-//
-//		}
-//		else
-//		{
-//			++m_moveNum;
-//		}
-//		return line0;
-//	}
-//
-//	int m_distance = 50;
-//
-//	int m_Angle = 5;//5个单位向量
-//	int m_CurIndex = 0;// 控制头部转弯到第几个index
-//	int m_moveNum = 0;
-//
-//	//
-//	CLine moveToIndexNew(int iToIndex)
-//	{
-//		CLine& line0 = m_lines[0];
-//		int iDistance = 10;//转弯
-//		int iDistance1 = 12;//直行
-//		int size = g_unitAngle.m_vPoint.size();
-//
-//		CMyPoint mvVec;
-//		CString str;
-//		CMyPoint myP_last;
-//		bool bFlag = false;
-//
-//		if (iToIndex < m_CurIndex)
-//		{
-//			iToIndex += g_unitNum;
-//		}
-//		if (iToIndex == m_CurIndex)
-//		{
-//			//已到达目的转向，
-//		}
-//		else if (iToIndex - m_CurIndex < g_unitNum / 2)
-//		{
-//			++m_CurIndex;
-//		}
-//		else
-//		{
-//			--m_CurIndex;
-//		}
-//
-//		m_CurIndex = m_CurIndex % g_unitNum;
-//
-//		for (int i = 0; i < m_lines.size(); ++i)
-//		{
-//			CLine& line = m_lines[i];
-//			CMyPoint mp;
-//
-//			//if (m_CurIndex + m_Angle - i > 0)
-//			//{
-//			//	int index = (m_CurIndex + m_Angle - i) % size;
-//			//	mp = g_unitAngle.m_vPoint[index];//一个单位向量，表示方向
-//			//	
-//			//	if (index == iToIndex)
-//			//	{
-//			//		str.Format(_T("===============moveAngle index:%d toindex:%d mpx:%6f mpy:%6f ===============\n"),
-//			//			index, iToIndex, mp.m_x, mp.m_y);
-//			//		OutputDebugString(str);
-//			//	}
-//			//}
-//
-//			if (i == 0)
-//			{
-//				mp = g_unitAngle.m_vPoint[m_CurIndex];//一个单位向量，表示方向
-//				mvVec = CMyPoint(mp.m_x, mp.m_y);
-//				mvVec.m_x = mp.m_x * iDistance;
-//				mvVec.m_y = mp.m_y * iDistance;
-//				str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), m_CurIndex, mp.m_x, mp.m_y);
-//				OutputDebugString(str);
-//
-//				line.moveVec(mvVec);
-//				myP_last.m_x = mvVec.m_x;
-//				myP_last.m_y = mvVec.m_y;
-//			}
-//			else
-//			{
-//				CMyPoint vec_now;
-//				vec_now.m_x = mp.m_x * iDistance;
-//				vec_now.m_y = mp.m_y * iDistance;
-//
-//				CMyPoint now;
-//				now.m_x = myP_last.m_x - vec_now.m_x;
-//				now.m_y = myP_last.m_y - vec_now.m_y;
-//
-//				line.moveToPoint(now);
-//			}
-//			myP_last.m_x = line.m_mid.m_x;
-//			myP_last.m_y = line.m_mid.m_y;
-//		}
-//
-//
-//		return line0;
-//	}
-//};
 
 struct CLinesNew {
 	CLinesNew()
 	{
 		CMyPoint begin(500, 200);
-		int iLength = 8;
-		for (int i = 0; i < 50; ++i)
+		int iLength = 12;
+		//int iLength = g_NodeDistance;
+		for (int i = 0; i < 35; ++i)
 		{
 			begin.m_x -= -iLength;
 			CNode node(begin);
-			
+
 			m_nodes.push_back(node);
 		}
 	}
@@ -517,133 +351,76 @@ struct CLinesNew {
 	int m_CurIndex = 0;// 控制头部转弯到第几个index
 	int m_moveNum = 0;
 
-	//CNode moveToIndexNew(int iToIndex)
-	//{
-	//	CNode& head = m_nodes[0];
-	//	int iDistance = 10;//转弯
-	//	int iDistance1 = 12;//直行
-	//	int size = g_unitAngle.m_vPoint.size();
-
-	//	CMyPoint mvVec;
-	//	CString str;
-	//	CMyPoint myP_last;
-	//	bool bFlag = false;
-
-	//	if (iToIndex < m_CurIndex)
-	//	{
-	//		iToIndex += g_unitNum;
-	//	}
-	//	if (iToIndex == m_CurIndex)
-	//	{
-	//		//已到达目的转向，
-	//	}
-	//	else if (iToIndex - m_CurIndex < g_unitNum / 2)
-	//	{
-	//		++m_CurIndex;
-	//	}
-	//	else
-	//	{
-	//		--m_CurIndex;
-	//	}
-
-	//	m_CurIndex = m_CurIndex % g_unitNum;
-
-	//	for (int i = 0; i < m_nodes.size(); ++i)
-	//	{
-	//		CNode& node = m_nodes[i];
-	//		CMyPoint mp;
-
-	//		if (i == 0)
-	//		{
-	//			mp = g_unitAngle.m_vPoint[m_CurIndex];//一个单位向量，表示方向
-	//			mvVec = CMyPoint(mp.m_x, mp.m_y);
-	//			mvVec.m_x = mp.m_x * iDistance;
-	//			mvVec.m_y = mp.m_y * iDistance;
-	//			str.Format(_T("moveAngle index:%d x:%6f y:%6f \n"), m_CurIndex, mp.m_x, mp.m_y);
-	//			OutputDebugString(str);
-
-	//			node.moveVec(mvVec);
-	//			myP_last.m_x = mvVec.m_x;
-	//			myP_last.m_y = mvVec.m_y;
-	//		}
-	//		else
-	//		{
-	//			CMyPoint vec_now;
-	//			vec_now.m_x = mp.m_x * iDistance;
-	//			vec_now.m_y = mp.m_y * iDistance;
-
-	//			CMyPoint now;
-	//			now.m_x = myP_last.m_x - vec_now.m_x;
-	//			now.m_y = myP_last.m_y - vec_now.m_y;
-
-	//			node.moveToPoint(now);
-	//		}
-	//		myP_last.m_x = node.m_point.m_x;
-	//		myP_last.m_y = node.m_point.m_y;
-	//	}
-
-
-	//	return head;
-	//}
-
 
 	CNode moveToIndexNew1(int iToIndex)
 	{
 		CNode& head = m_nodes[0];
-		int iDistance = 10;//转弯
-		int iDistance1 = 12;//直行
+		//int iDistance = 10;//转弯
+		//int iDistance1 = 12;//直行
 		int size = g_unitAngle.m_vPoint.size();
 
-		CMyPoint mvVec;
+		//CMyPoint mvVec;
 		CString str;
-		CMyPoint myP_last;
+		CMyPoint myP_last;//上个点已移动的位置
+		CMyPoint myP_last_old;//上个点的老位置
 		bool bFlag = false;
-		if (iToIndex==0)
+		if (iToIndex == 0)
 		{
-			CString str;
 			str.Format(_T("moveToIndexNew1 0000000000 \n"));
 			OutputDebugString(str);
 		}
 		else
 		{
-			CString str;
 			str.Format(_T("moveToIndexNew1 1111111111 \n"));
 			OutputDebugString(str);
 		}
-		head.moveForward(10);
-		/*if (!g_bTurning)
-		{*/
-			//head.m_curIndex = iToIndex;
-			//g_bTurning = true;
-			if (iToIndex!= head.m_curIndex)
-			{
-				bool bTurned = head.toIndex(iToIndex);
-			}
-			
-		/*	if (bTurned)
-			{
-				g_bTurning = false;
-			}
-		}*/
-		
+		myP_last_old = head.m_point;
+		head.moveForward(g_NodeDistance);
 
+		myP_last = head.m_point;//前一节点移动到的位置
+		bool bTurned = true;//true为直行，false为转弯中
+		if (iToIndex != head.m_curIndex)
+		{
+			bTurned = head.toIndex(iToIndex);//返回是否到达目标转向
+		}
+
+		int iCnt = 4;
+		int iInitIndex = head.m_curIndex;
 		for (int i = 1; i < m_nodes.size(); ++i)
 		{
-			CNode& node = m_nodes[i];
-			CMyPoint mp;
-			 
-				/*CMyPoint vec_now;
-				vec_now.m_x = mp.m_x * iDistance;
-				vec_now.m_y = mp.m_y * iDistance;
+			CNode& body = m_nodes[i];
+			CMyPoint tmp = body.m_point;
 
-				CMyPoint now;
-				now.m_x = myP_last.m_x - vec_now.m_x;
-				now.m_y = myP_last.m_y - vec_now.m_y;
+			CMyPoint direct;//前一节点A与当前节点B之间的差向量
+			direct.m_x = myP_last.m_x - body.m_point.m_x;
+			direct.m_y = myP_last.m_y - body.m_point.m_y;
+			//前一节点A与当前节点B之间的差向量的大小,即距离
+			float distance = pow(pow(direct.m_x, 2) + pow(direct.m_y, 2), 0.5);
+			//可替换解决方案,本节点与前一节点，前一节点已到达的节点 共线，说明前一节点的移动是直行
+			if (bTurned)//直行
+			{
+				//body.moveToPoint(myP_last_old);//重复上一次运动有个问题,就是如果上一节点A的移动距离和 A与本节点B初始的距离F 不等， 则移动后，F会改变,导致蛇身长度正常直行时与初始不同
+				//if (distance > g_NodeDistance)
+				{
+					str.Format(_T("moveToIndexNew1 -------00----------- \n"));
+					OutputDebugString(str);
+					body.moveToPoint(myP_last_old);//直行时，只有当与前一节点的距离超过初始距离，本节点才动，这样就可以在直行时重新伸开身体
+				}
+				str.Format(_T("moveToIndexNew1 --------11----------- \n"));
+				OutputDebugString(str);
+			}
+			else
+			{
+				str.Format(_T("moveToIndexNew1 -------22----------- \n"));
+				OutputDebugString(str);
+				//转弯时依旧和直行时移动相同距离，可导致蛇身收缩
+				CMyPoint move = CMyPoint(direct.m_x / distance * g_NodeDistance, direct.m_y / distance * g_NodeDistance);
+				body.moveVec(move);
+			}
+			
+			myP_last_old = tmp;
+			myP_last = body.m_point;
 
-				node.moveToPoint(now);*/
-			 
-			myP_last.m_x = node.m_point.m_x;
-			myP_last.m_y = node.m_point.m_y;
 		}
 
 

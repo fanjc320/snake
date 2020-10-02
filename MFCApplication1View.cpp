@@ -89,6 +89,13 @@ BOOL CMFCApplication1View::PreCreateWindow(CREATESTRUCT& cs)
 	return CView::PreCreateWindow(cs);
 }
 
+void CMFCApplication1View::drawNode(CDC* pDC, CNode& node)
+{
+	if (!pDC)
+		return;
+    DrawEllipse(pDC, CPoint(node.m_point.m_x, node.m_point.m_y));
+}
+
 //void CMFCApplication1View::drawLine(CDC* pDC, CLine& line)
 //{
 //	if (!pDC)
@@ -163,12 +170,16 @@ void CMFCApplication1View::OnDraw(CDC* pDC)
 	g_vPoint.push_back(CPoint(head.m_point.m_x, head.m_point.m_y));
 	drawPoits(pDC, g_vPoint);
 
+    for (auto& node : g_Lines.m_nodes)
+    {
+        drawNode(pDC, node);
+    }
 
-	for (auto& node : g_Lines.m_nodes)
+	/*for (auto& node : g_Lines.m_nodes)
 	{
 		g_vPoint.push_back(CPoint(node.m_point.m_x,node.m_point.m_y));
 		drawPoits(pDC, g_vPoint);
-	}
+	}*/
 
     
     //DrawAngleArc(pDC);
@@ -373,7 +384,7 @@ void CMFCApplication1View::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
     // TODO: 在此添加消息处理程序代码和/或调用默认值
 
     CView::OnKeyUp(nChar, nRepCnt, nFlags);
-	if (nChar == 83)//w
+	if (nChar == 87)//w
 	{
 		//MessageBox(L"ww");
 		m_Direction.m_x = 0.0f;
@@ -386,7 +397,7 @@ void CMFCApplication1View::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
 		m_Direction.m_y = 0.0f;
         m_ToIndex = g_unitNum / 4 * 2;
 	}
-	else if (nChar == 87)//s
+	else if (nChar == 83)//s 
 	{
 		m_Direction.m_x = 0.0f;
 		m_Direction.m_y = -1.0f;
