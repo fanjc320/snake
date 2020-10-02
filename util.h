@@ -332,11 +332,11 @@ struct CLinesNew {
 	CLinesNew()
 	{
 		CMyPoint begin(500, 200);
-		int iLength = 12;
+		int iLength = g_NodeDistance;
 		//int iLength = g_NodeDistance;
-		for (int i = 0; i < 35; ++i)
+		for (int i = 0; i < 100; ++i)
 		{
-			begin.m_x -= -iLength;
+			begin.m_x -= iLength;
 			CNode node(begin);
 
 			m_nodes.push_back(node);
