@@ -1,7 +1,7 @@
 #pragma once
 #include <vector>
 #include <cmath>
-
+using namespace std;
 //static int g_Id = 0;
 static bool g_bTurning = false;//转向中 
 static float g_NodeDistance = 12.0f;//node之间的直行距离，或者叫初始距离
@@ -16,7 +16,20 @@ struct CMyPoint
 	}
 	float m_x = 0.0f;
 	float m_y = 0.0f;
+
+	CMyPoint operator+(const CMyPoint& b) {
+		CMyPoint box;
+		box.m_x = this->m_x + b.m_x;
+		box.m_y = this->m_y + b.m_y;
+		return box;
+	}
+	CMyPoint& operator-(const CMyPoint& b) {
+		this->m_x = this->m_x - b.m_x;
+		this->m_y = this->m_y - b.m_y;
+		return *this;
+	}
 };
+
 struct CUnitAngle
 {
 	std::vector<CMyPoint> m_vPoint;
@@ -225,15 +238,43 @@ struct CNode {
 	CMyPoint m_point;
 	int m_curIndex = 0;//当前方向index
 	int m_IndexGap = 4;
+	bool bTurning = false;
+
+	vector<CMyPoint> vHistoryPoints;
+
+	void pushToHis(CMyPoint point)
+	{
+		vHistoryPoints.push_back(point);
+		while (vHistoryPoints.size()>3)
+		{
+			auto k = vHistoryPoints.begin();
+			vHistoryPoints.erase(k);
+		}
+		if (vHistoryPoints.size()==3)
+		{
+			CMyPoint vec1 = vHistoryPoints[1] - vHistoryPoints[0];
+			CMyPoint vec2 = vHistoryPoints[2] - vHistoryPoints[1];
+			if (fabs(vec1.m_x * vec2.m_y - vec1.m_y * vec2.m_x)<0.01f) //共线
+			{
+				bTurning = false;
+			}
+			else
+			{
+				bTurning = true;
+			}
+		}
+	}
 
 	void moveToPoint(CMyPoint cp)
 	{
 		m_point = cp;
+		pushToHis(m_point);
 	}
 	void moveVec(CMyPoint cp)
 	{
 		m_point.m_x += cp.m_x;
 		m_point.m_y += cp.m_y;
+		pushToHis(m_point);
 	}
 
 	void moveForward(float fDistance)
@@ -257,6 +298,7 @@ struct CNode {
 		checkIndex(m_curIndex);
 		if (iToIndex == m_curIndex)
 		{
+			bTurning = false;
 			return true;//已到达目的转向，
 		}
 		CString str;
@@ -364,7 +406,7 @@ struct CLinesNew {
 		CMyPoint myP_last;//上个点已移动的位置
 		CMyPoint myP_last_old;//上个点的老位置
 		bool bFlag = false;
-		if (iToIndex == 0)
+		/*if (iToIndex == 0)
 		{
 			str.Format(_T("moveToIndexNew1 0000000000 \n"));
 			OutputDebugString(str);
@@ -373,9 +415,11 @@ struct CLinesNew {
 		{
 			str.Format(_T("moveToIndexNew1 1111111111 \n"));
 			OutputDebugString(str);
-		}
+		}*/
 		myP_last_old = head.m_point;
+		head.pushToHis(head.m_point);
 		head.moveForward(g_NodeDistance);
+		
 
 		myP_last = head.m_point;//前一节点移动到的位置
 		bool bTurned = true;//true为直行，false为转弯中
@@ -386,36 +430,40 @@ struct CLinesNew {
 
 		int iCnt = 4;
 		int iInitIndex = head.m_curIndex;
+		bool bTurning = false;//上一节点是否在转弯
 		for (int i = 1; i < m_nodes.size(); ++i)
 		{
 			CNode& body = m_nodes[i];
 			CMyPoint tmp = body.m_point;
+			body.pushToHis(body.m_point);
 
 			CMyPoint direct;//前一节点A与当前节点B之间的差向量
 			direct.m_x = myP_last.m_x - body.m_point.m_x;
 			direct.m_y = myP_last.m_y - body.m_point.m_y;
 			//前一节点A与当前节点B之间的差向量的大小,即距离
 			float distance = pow(pow(direct.m_x, 2) + pow(direct.m_y, 2), 0.5);
+
+
 			//可替换解决方案,本节点与前一节点，前一节点已到达的节点 共线，说明前一节点的移动是直行
-			if (bTurned)//直行
+			//if (!bTurning)//直行
+			//{
+			//	//body.moveToPoint(myP_last_old);//重复上一次运动有个问题,就是如果上一节点A的移动距离和 A与本节点B初始的距离F 不等， 则移动后，F会改变,导致蛇身长度正常直行时与初始不同
+			//	
+			//	body.moveToPoint(myP_last_old);//直行时，只有当与前一节点的距离超过初始距离，本节点才动，这样就可以在直行时重新伸开身体
+			//	
+			//	str.Format(_T("moveToIndexNew1 --------11----------- \n"));
+			//	OutputDebugString(str);
+			//}
+			//else
+			if (distance >= g_NodeDistance)
 			{
-				//body.moveToPoint(myP_last_old);//重复上一次运动有个问题,就是如果上一节点A的移动距离和 A与本节点B初始的距离F 不等， 则移动后，F会改变,导致蛇身长度正常直行时与初始不同
-				//if (distance > g_NodeDistance)
-				{
-					str.Format(_T("moveToIndexNew1 -------00----------- \n"));
-					OutputDebugString(str);
-					body.moveToPoint(myP_last_old);//直行时，只有当与前一节点的距离超过初始距离，本节点才动，这样就可以在直行时重新伸开身体
-				}
-				str.Format(_T("moveToIndexNew1 --------11----------- \n"));
-				OutputDebugString(str);
-			}
-			else
-			{
-				str.Format(_T("moveToIndexNew1 -------22----------- \n"));
-				OutputDebugString(str);
-				//转弯时依旧和直行时移动相同距离，可导致蛇身收缩
+				/*str.Format(_T("moveToIndexNew1 -------22----distance:%d------- \n"),distance);
+				OutputDebugString(str);*/
+				//转弯时依旧和直行时移动相同距离，可导致蛇身收缩,move的长度是一个身体g_NodeDistance
 				CMyPoint move = CMyPoint(direct.m_x / distance * g_NodeDistance, direct.m_y / distance * g_NodeDistance);
-				body.moveVec(move);
+				//body.moveVec(move);
+				CMyPoint moveTo = CMyPoint(myP_last.m_x - move.m_x, myP_last.m_y - move.m_y);
+				body.moveToPoint(moveTo);
 			}
 			
 			myP_last_old = tmp;

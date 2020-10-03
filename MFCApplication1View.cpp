@@ -417,7 +417,9 @@ void CMFCApplication1View::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
         line.m_curIndex = 30;
         line.toDirection(20);
         line.toDirection(2);*/
-   
+    /*CString str;
+    str.Format(_T("==================================================OnKeyUp  nChar:%d   \n"), nChar);
+    OutputDebugString(str);*/
 }
 
 
