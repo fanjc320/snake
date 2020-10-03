@@ -116,19 +116,19 @@ void CMFCApplication1View::drawNode(CDC* pDC, CNode& node)
 //	}
 //}
 
-void CMFCApplication1View::drawLines(CDC* pDC, std::vector<CLine>& lines)
-{
-    if (!pDC)
-        return;
-    pDC->MoveTo(CPoint(lines[0].m_begin.m_x, lines[0].m_begin.m_y));
-    for (auto& line : lines)
-    {
-        DrawEllipse(pDC, CPoint(line.m_begin.m_x, line.m_begin.m_y));
-        pDC->LineTo(CPoint(line.m_begin.m_x, line.m_begin.m_y));
-        pDC->MoveTo(CPoint(line.m_begin.m_x, line.m_begin.m_y));
-    }
-    
-}
+//void CMFCApplication1View::drawLines(CDC* pDC, std::vector<CLine>& lines)
+//{
+//    if (!pDC)
+//        return;
+//    pDC->MoveTo(CPoint(lines[0].m_begin.m_x, lines[0].m_begin.m_y));
+//    for (auto& line : lines)
+//    {
+//        DrawEllipse(pDC, CPoint(line.m_begin.m_x, line.m_begin.m_y));
+//        pDC->LineTo(CPoint(line.m_begin.m_x, line.m_begin.m_y));
+//        pDC->MoveTo(CPoint(line.m_begin.m_x, line.m_begin.m_y));
+//    }
+//    
+//}
 
 void CMFCApplication1View::drawPoits(CDC* pDC, std::vector<CPoint> points)
 {

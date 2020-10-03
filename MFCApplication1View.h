@@ -44,8 +44,8 @@ public:
 	virtual void OnDraw(CDC* pDC);  // 重写以绘制该视图
 	virtual BOOL PreCreateWindow(CREATESTRUCT& cs);
 	void drawNode(CDC* pDC, CNode& node);
-	void drawLine(CDC* pDC, CLine& line);
-	void drawLines(CDC* pDC, std::vector<CLine>& lines);
+	/*void drawLine(CDC* pDC, CLine& line);
+	void drawLines(CDC* pDC, std::vector<CLine>& lines);*/
 protected:
 	virtual BOOL OnPreparePrinting(CPrintInfo* pInfo);
 	virtual void OnBeginPrinting(CDC* pDC, CPrintInfo* pInfo);

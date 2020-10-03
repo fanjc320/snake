@@ -3,8 +3,6 @@
 #include <queue>
 #include <cmath>
 using namespace std;
-//static int g_Id = 0;
-static bool g_bTurning = false;//转向中 
 static float g_NodeDistance = 12.0f;//node之间的直行距离，或者叫初始距离
 static int g_bodyNum = 50;
 
@@ -25,16 +23,11 @@ struct CMyPoint
 		box.m_y = this->m_y + b.m_y;
 		return box;
 	}
+	//不要写成this.m_x= 的形式，这里对-的期望不改变现在的值
 	CMyPoint operator-(const CMyPoint& b) {
-		/*this->m_x = this->m_x - b.m_x;
-		this->m_y = this->m_y - b.m_y;*/
 		CMyPoint box;
 		box.m_x = this->m_x - b.m_x;
 		box.m_y = this->m_y - b.m_y;
-		/*CString str;
-		str.Format(_T("--------operator---------m_x:%f m_y:%f b.m_x:%f b.m_y:%f---------------- \n"),
-			m_x, m_y, b.m_x, b.m_y);
-		OutputDebugString(str);*/
 		return box;
 	}
 };
@@ -79,83 +72,6 @@ static void checkIndex(int iIndex)
 	}
 }
 
-//单位向量，用来表示角度
-struct CAngle
-{
-	float distancePoint(float x1, float y1, float x2, float y2)
-	{
-		//return  pow(pow(x1 - x2, 2) + pow(y1 - y2, 2), 0.5);
-		float all = (x1 - x2) * (x1 - x2) + (y1 - y2) * (y1 - y2);
-		float s = sqrt(all);//2次开根bai号函数,必须du包含头文件zhicmath.
-		return s;
-	}
-
-	CAngle(float x, float y)//输入目标向量
-	{
-		//int distance = (int)distancePoint(0, 0, x, y);
-		float distance = distancePoint(x, y, 0, 0);
-		if (distance < 0.0001)
-		{
-			distance = 0.0001;
-		}
-		//求差向量
-		x -= distance;
-		distance = distancePoint(x, y, 0, 0);
-		if (distance < 0.0001)
-		{
-			distance = 0.0001;
-		}
-		m_x = x / distance;
-		m_y = y / distance;
-
-	}
-	/*CAngle(CMyPoint point)
-	{
-		CAngle(point.x, point.y);
-	}*/
-	float m_x = 1;
-	float m_y = 0;
-};
-
-struct CVec// 在angle的基础上加上长度
-{
-	CAngle m_angle = CAngle(1, 0);
-	//CAngle m_angle(1,0);
-	float m_fLength = 0;
-	CMyPoint m_ang_point = CMyPoint(1, 1);
-	float m_x = 0;
-	float m_y = 0;
-
-	float distancePoint(float x1, float y1, float x2, float y2)
-	{
-		return  pow(pow(x1 - x2, 2) + pow(y1 - y2, 2), 0.5);
-	}
-	CVec(float x, float y, float fLength)
-	{
-		m_angle = CAngle(x, y);
-		m_fLength = fLength;
-
-		m_x = m_angle.m_x * fLength;
-		m_y = m_angle.m_y * fLength;
-	}
-	CVec(CAngle angle, float fLength)
-	{
-		CVec(angle.m_x, angle.m_y, fLength);
-	}
-	void setXY(CAngle angle, float fLength)
-	{
-		m_angle = angle;
-		m_x = m_angle.m_x * fLength;
-		m_y = m_angle.m_y * fLength;
-	}
-	CVec(float x, float y)
-	{
-		m_x = x;
-		m_y = y;
-	}
-
-};
-
 
 //向量toP是否在p1和p2夹角内，即是否可被p1和p2组合
 static bool bInAngle(CMyPoint toP, CMyPoint p1, CMyPoint p2)
@@ -188,56 +104,6 @@ static bool bInAngle(CMyPoint toP, CMyPoint p1, CMyPoint p2)
 	return true;
 }
 
-struct CLine {
-	CLine(CMyPoint begin, CMyPoint end) {
-		m_begin = begin;
-		m_end = end;
-		m_mid = CMyPoint((m_begin.m_x + m_end.m_x) / 2, (m_end.m_y + m_end.m_y) / 2);
-	}
-	CLine()
-	{
-	}
-
-	CMyPoint m_begin;
-	CMyPoint m_end;
-	CMyPoint m_mid;
-	//CAngle m_moveAng = CAngle(1.0f, 0.0f);
-	int m_angleCnt = 0;
-	int m_curIndex;//当前方向index
-
-	void moveToPoint(CMyPoint cp)
-	{
-		m_mid = cp;
-		m_begin.m_x = cp.m_x - 0.05f;
-		m_begin.m_y = cp.m_y;
-		m_end.m_x = cp.m_x + 0.05f;
-		m_end.m_y = cp.m_y;
-	}
-	void moveVec(CMyPoint p)
-	{
-		m_mid.m_x += p.m_x;
-		m_begin.m_x += p.m_x;
-		m_end.m_x += p.m_x;
-
-		m_mid.m_y += p.m_x;
-		m_begin.m_y += p.m_y;
-		m_end.m_y += p.m_y;
-	}
-
-	void moveForward(float fDistance)
-	{
-		/*g_unitNum
-		CMyPoint mm();*/
-		CMyPoint pp = g_unitAngle.getDirect(m_curIndex);
-		moveVec(CMyPoint(pp.m_x * fDistance, pp.m_y * fDistance));
-	}
-
-	void setDirection(int index)
-	{
-		m_curIndex = index;
-	}
-
-};
 
 struct CNode {
 	CNode(CMyPoint point) {
@@ -284,16 +150,16 @@ struct CNode {
 			CMyPoint vec2 = vHistoryPoints[2] - vHistoryPoints[1];
 			if (fabs(vec1.m_x * vec2.m_y - vec1.m_y * vec2.m_x)<0.01f) //共线
 			{
-				str.Format(_T("--------turning false---------------------------vec1x:%f vec1y:%f vec2x:%f vec2y:%f-------- \n"),
+				/*str.Format(_T("--------turning false---------------------------vec1x:%f vec1y:%f vec2x:%f vec2y:%f-------- \n"),
 					vec1.m_x,vec1.m_y,vec2.m_x,vec2.m_y);
-				OutputDebugString(str);
+				OutputDebugString(str);*/
 				bTurning = false;
 			}
 			else
 			{
-				str.Format(_T("----------------turning true-------vec1x:%f vec1y:%f vec2x:%f vec2y:%f--------- \n"),
+				/*str.Format(_T("----------------turning true-------vec1x:%f vec1y:%f vec2x:%f vec2y:%f--------- \n"),
 					vec1.m_x, vec1.m_y, vec2.m_x, vec2.m_y);
-				OutputDebugString(str);
+				OutputDebugString(str);*/
 				bTurning = true;
 			}
 		}
@@ -336,8 +202,9 @@ struct CNode {
 			return true;//已到达目的转向，
 		}
 		CString str;
+		/*
 		str.Format(_T("==================================================toIndex  curindex:%d toindex:%d \n"), m_curIndex, iToIndex);
-		OutputDebugString(str);
+		OutputDebugString(str);*/
 
 		int iA = 0;
 		int iB = 0;
@@ -356,14 +223,14 @@ struct CNode {
 
 		if (iA < iB)
 		{
-			m_curIndex += m_IndexGap;
-			str.Format(_T("===============toIndex  curindex:%d ++++  \n"), m_curIndex);
+			/*m_curIndex += m_IndexGap;
+			str.Format(_T("===============toIndex  curindex:%d ++++  \n"), m_curIndex);*/
 			OutputDebugString(str);
 		}
 		else
 		{
-			m_curIndex -= m_IndexGap;
-			str.Format(_T("===============toIndex  curindex:%d ---- \n"), m_curIndex);
+			/*m_curIndex -= m_IndexGap;
+			str.Format(_T("===============toIndex  curindex:%d ---- \n"), m_curIndex);*/
 			OutputDebugString(str);
 		}
 
@@ -478,28 +345,13 @@ struct CLinesNew {
 			//前一节点A与当前节点B之间的差向量的大小,即距离
 			float distance = pow(pow(direct.m_x, 2) + pow(direct.m_y, 2), 0.5);
 
-
-			//可替换解决方案,本节点与前一节点，前一节点已到达的节点 共线，说明前一节点的移动是直行
-			//if (!bTurning)//直行
-			//{
-			//	//body.moveToPoint(myP_last_old);//重复上一次运动有个问题,就是如果上一节点A的移动距离和 A与本节点B初始的距离F 不等， 则移动后，F会改变,导致蛇身长度正常直行时与初始不同
-			//	
-			//	body.moveToPoint(myP_last_old);//直行时，只有当与前一节点的距离超过初始距离，本节点才动，这样就可以在直行时重新伸开身体
-			//	
-			//	str.Format(_T("moveToIndexNew1 --------11----------- \n"));
-			//	OutputDebugString(str);
-			//}
-			//else
 			if (distance >= g_NodeDistance)
 			{
 				/*str.Format(_T("moveToIndexNew1 -------22----distance:%d------- \n"),distance);
 				OutputDebugString(str);*/
 				//转弯时依旧和直行时移动相同距离，可导致蛇身收缩,move的长度是一个身体g_NodeDistance
 				CMyPoint move = CMyPoint(direct.m_x / distance * g_NodeDistance, direct.m_y / distance * g_NodeDistance);
-				//body.moveVec(move);
 				CMyPoint moveTo = CMyPoint(myP_last.m_x - move.m_x, myP_last.m_y - move.m_y);
-
-
 
 				if (pLastNode->bTurning)
 				{
