@@ -1,10 +1,12 @@
 #pragma once
 #include <vector>
+#include <queue>
 #include <cmath>
 using namespace std;
 //static int g_Id = 0;
 static bool g_bTurning = false;//转向中 
 static float g_NodeDistance = 12.0f;//node之间的直行距离，或者叫初始距离
+static int g_bodyNum = 50;
 
 struct CMyPoint
 {
@@ -23,10 +25,17 @@ struct CMyPoint
 		box.m_y = this->m_y + b.m_y;
 		return box;
 	}
-	CMyPoint& operator-(const CMyPoint& b) {
-		this->m_x = this->m_x - b.m_x;
-		this->m_y = this->m_y - b.m_y;
-		return *this;
+	CMyPoint operator-(const CMyPoint& b) {
+		/*this->m_x = this->m_x - b.m_x;
+		this->m_y = this->m_y - b.m_y;*/
+		CMyPoint box;
+		box.m_x = this->m_x - b.m_x;
+		box.m_y = this->m_y - b.m_y;
+		/*CString str;
+		str.Format(_T("--------operator---------m_x:%f m_y:%f b.m_x:%f b.m_y:%f---------------- \n"),
+			m_x, m_y, b.m_x, b.m_y);
+		OutputDebugString(str);*/
+		return box;
 	}
 };
 
@@ -239,27 +248,52 @@ struct CNode {
 	int m_curIndex = 0;//当前方向index
 	int m_IndexGap = 4;
 	bool bTurning = false;
+	int m_flag = 0;
 
-	vector<CMyPoint> vHistoryPoints;
+	//std::queue<CMyPoint> vHistoryPoints;
+	//std::queue<CMyPoint> vHistoryPoints;
+	std::deque<CMyPoint> vHistoryPoints;
 
 	void pushToHis(CMyPoint point)
 	{
 		vHistoryPoints.push_back(point);
+		CString str;
+		/*
+		str.Format(_T("----------------------------------------------------------------------------------------------------------------------flag:%d----pushToHis point-px:%f py:%f\n"),
+			m_flag,point.m_x, point.m_y);
+		OutputDebugString(str);*/
 		while (vHistoryPoints.size()>3)
 		{
-			auto k = vHistoryPoints.begin();
-			vHistoryPoints.erase(k);
+			vHistoryPoints.pop_front();
 		}
-		if (vHistoryPoints.size()==3)
+		
+		/*for (auto it = vHistoryPoints.begin(); it != vHistoryPoints.end(); it++)
 		{
+			str.Format(_T(" ---p0x:%f p0y:%f "),
+				it->m_x, it->m_y);
+			OutputDebugString(str);
+		}*/
+
+		/*str.Format(_T("pushToHis print  --flag:%d  \n "),m_flag);
+		OutputDebugString(str);*/
+
+		if (vHistoryPoints.size()>=3)
+		{
+
 			CMyPoint vec1 = vHistoryPoints[1] - vHistoryPoints[0];
 			CMyPoint vec2 = vHistoryPoints[2] - vHistoryPoints[1];
 			if (fabs(vec1.m_x * vec2.m_y - vec1.m_y * vec2.m_x)<0.01f) //共线
 			{
+				str.Format(_T("--------turning false---------------------------vec1x:%f vec1y:%f vec2x:%f vec2y:%f-------- \n"),
+					vec1.m_x,vec1.m_y,vec2.m_x,vec2.m_y);
+				OutputDebugString(str);
 				bTurning = false;
 			}
 			else
 			{
+				str.Format(_T("----------------turning true-------vec1x:%f vec1y:%f vec2x:%f vec2y:%f--------- \n"),
+					vec1.m_x, vec1.m_y, vec2.m_x, vec2.m_y);
+				OutputDebugString(str);
 				bTurning = true;
 			}
 		}
@@ -376,11 +410,11 @@ struct CLinesNew {
 		CMyPoint begin(500, 200);
 		int iLength = g_NodeDistance;
 		//int iLength = g_NodeDistance;
-		for (int i = 0; i < 100; ++i)
+		for (int i = 0; i < g_bodyNum; ++i)
 		{
 			begin.m_x -= iLength;
 			CNode node(begin);
-
+			node.m_flag = i;
 			m_nodes.push_back(node);
 		}
 	}
@@ -405,6 +439,7 @@ struct CLinesNew {
 		CString str;
 		CMyPoint myP_last;//上个点已移动的位置
 		CMyPoint myP_last_old;//上个点的老位置
+		CNode* pLastNode = &head;
 		bool bFlag = false;
 		/*if (iToIndex == 0)
 		{
@@ -417,7 +452,7 @@ struct CLinesNew {
 			OutputDebugString(str);
 		}*/
 		myP_last_old = head.m_point;
-		head.pushToHis(head.m_point);
+		//head.pushToHis(head.m_point);
 		head.moveForward(g_NodeDistance);
 		
 
@@ -435,7 +470,7 @@ struct CLinesNew {
 		{
 			CNode& body = m_nodes[i];
 			CMyPoint tmp = body.m_point;
-			body.pushToHis(body.m_point);
+			//body.pushToHis(body.m_point);
 
 			CMyPoint direct;//前一节点A与当前节点B之间的差向量
 			direct.m_x = myP_last.m_x - body.m_point.m_x;
@@ -463,12 +498,27 @@ struct CLinesNew {
 				CMyPoint move = CMyPoint(direct.m_x / distance * g_NodeDistance, direct.m_y / distance * g_NodeDistance);
 				//body.moveVec(move);
 				CMyPoint moveTo = CMyPoint(myP_last.m_x - move.m_x, myP_last.m_y - move.m_y);
-				body.moveToPoint(moveTo);
+
+
+
+				if (pLastNode->bTurning)
+				{
+					body.moveVec(move);
+					/*str.Format(_T("moveToIndexNew1 --------11-----------index:%d \n"), i);
+					OutputDebugString(str);*/
+				}
+				else
+				{
+					body.moveToPoint(moveTo);
+					/*str.Format(_T("moveToIndexNew1 --------22-----------index:%d \n"), i);
+					OutputDebugString(str);*/
+				}
+
 			}
 			
 			myP_last_old = tmp;
 			myP_last = body.m_point;
-
+			pLastNode = &body;
 		}
 
 
