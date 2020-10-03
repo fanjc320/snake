@@ -116,8 +116,6 @@ struct CNode {
 	bool bTurning = false;
 	int m_flag = 0;
 
-	//std::queue<CMyPoint> vHistoryPoints;
-	//std::queue<CMyPoint> vHistoryPoints;
 	std::deque<CMyPoint> vHistoryPoints;
 
 	void pushToHis(CMyPoint point)
@@ -181,9 +179,9 @@ struct CNode {
 	{
 		CMyPoint pp = g_unitAngle.getDirect(m_curIndex);
 		moveVec(CMyPoint(pp.m_x * fDistance, pp.m_y * fDistance));
-		/*CString str;
+		CString str;
 		str.Format(_T("moveForward curindex:%d ppx:%f ppy:%f\n"), m_curIndex, pp.m_x, pp.m_y);
-		OutputDebugString(str);*/
+		OutputDebugString(str);
 	}
 
 	void setIndex(int index)
@@ -202,8 +200,8 @@ struct CNode {
 			return true;//已到达目的转向，
 		}
 		CString str;
-		/*
-		str.Format(_T("==================================================toIndex  curindex:%d toindex:%d \n"), m_curIndex, iToIndex);
+		
+		/*str.Format(_T("==================================================toIndex  curindex:%d toindex:%d \n"), m_curIndex, iToIndex);
 		OutputDebugString(str);*/
 
 		int iA = 0;
@@ -223,13 +221,14 @@ struct CNode {
 
 		if (iA < iB)
 		{
-			/*m_curIndex += m_IndexGap;
-			str.Format(_T("===============toIndex  curindex:%d ++++  \n"), m_curIndex);*/
+			m_curIndex += m_IndexGap;
+			//str.Format(_T("===============toIndex  curindex:%d ++++  \n"), m_curIndex);
 			OutputDebugString(str);
 		}
 		else
 		{
-			/*m_curIndex -= m_IndexGap;
+			m_curIndex -= m_IndexGap;
+			/*
 			str.Format(_T("===============toIndex  curindex:%d ---- \n"), m_curIndex);*/
 			OutputDebugString(str);
 		}
@@ -240,6 +239,7 @@ struct CNode {
 		}
 
 		m_curIndex = m_curIndex % g_unitNum;
+
 		return false;
 	}
 	
@@ -298,31 +298,15 @@ struct CLinesNew {
 	CNode moveToIndexNew1(int iToIndex)
 	{
 		CNode& head = m_nodes[0];
-		//int iDistance = 10;//转弯
-		//int iDistance1 = 12;//直行
 		int size = g_unitAngle.m_vPoint.size();
 
-		//CMyPoint mvVec;
 		CString str;
 		CMyPoint myP_last;//上个点已移动的位置
-		CMyPoint myP_last_old;//上个点的老位置
 		CNode* pLastNode = &head;
 		bool bFlag = false;
-		/*if (iToIndex == 0)
-		{
-			str.Format(_T("moveToIndexNew1 0000000000 \n"));
-			OutputDebugString(str);
-		}
-		else
-		{
-			str.Format(_T("moveToIndexNew1 1111111111 \n"));
-			OutputDebugString(str);
-		}*/
-		myP_last_old = head.m_point;
-		//head.pushToHis(head.m_point);
+
 		head.moveForward(g_NodeDistance);
 		
-
 		myP_last = head.m_point;//前一节点移动到的位置
 		bool bTurned = true;//true为直行，false为转弯中
 		if (iToIndex != head.m_curIndex)
@@ -368,11 +352,9 @@ struct CLinesNew {
 
 			}
 			
-			myP_last_old = tmp;
 			myP_last = body.m_point;
 			pLastNode = &body;
 		}
-
 
 		return head;
 	}

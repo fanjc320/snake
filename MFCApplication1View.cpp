@@ -175,18 +175,7 @@ void CMFCApplication1View::OnDraw(CDC* pDC)
         drawNode(pDC, node);
     }
 
-	/*for (auto& node : g_Lines.m_nodes)
-	{
-		g_vPoint.push_back(CPoint(node.m_point.m_x,node.m_point.m_y));
-		drawPoits(pDC, g_vPoint);
-	}*/
-
-    
     //DrawAngleArc(pDC);
-
-    /*wchar_t a[MAX_PATH] = { 0 };
-    wsprintf(a, L"x:%d y:%d \n", line0.m_begin.x, line0.m_begin.y);
-    OutputDebugString(a);*/
 
     Sleep(100);
     pDoc->UpdateAllViews(this);
@@ -417,43 +406,43 @@ void CMFCApplication1View::OnKeyUp(UINT nChar, UINT nRepCnt, UINT nFlags)
         line.m_curIndex = 30;
         line.toDirection(20);
         line.toDirection(2);*/
-    /*CString str;
-    str.Format(_T("==================================================OnKeyUp  nChar:%d   \n"), nChar);
+   /* CString str;
+    str.Format(_T("==================================================OnKeyUp  nChar:%d  index:%d \n"), nChar ,m_ToIndex);
     OutputDebugString(str);*/
 }
 
 
-BOOL CMFCApplication1View::PreTranslateMessage(MSG* pMsg)
-{
-	//https://www.cnblogs.com/lujin49/archive/2015/10/29/4919900.html
-	/*SendMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
-	return 0;*/
-    // TODO: 在此添加专用代码和/或调用基类
-    if (pMsg->message == WM_KEYDOWN)
-    {
-        if (pMsg->wParam == VK_RETURN)//回车键
-        {
-            //OnBnClickedButtonInput();
-            return TRUE;
-        }
-        if (pMsg->wParam == VK_SPACE)//空格键
-        {
-            //OnBnClickedButtonStartStop();
-        }
+//BOOL CMFCApplication1View::PreTranslateMessage(MSG* pMsg)
+//{
+//	//https://www.cnblogs.com/lujin49/archive/2015/10/29/4919900.html
+//	/*SendMessage(pMsg->message, pMsg->wParam, pMsg->lParam);
+//	return 0;*/
+//    // TODO: 在此添加专用代码和/或调用基类
+//    if (pMsg->message == WM_KEYDOWN)
+//    {
+//        if (pMsg->wParam == VK_RETURN)//回车键
+//        {
+//            //OnBnClickedButtonInput();
+//            return TRUE;
+//        }
+//        if (pMsg->wParam == VK_SPACE)//空格键
+//        {
+//            //OnBnClickedButtonStartStop();
+//        }
+//
+//
+//    }
+//    return CView::PreTranslateMessage(pMsg);
+//}
 
 
-    }
-    return CView::PreTranslateMessage(pMsg);
-}
-
-
-void CMFCApplication1View::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
-{
-    // TODO: 在此添加消息处理程序代码和/或调用默认值
-
-    CView::OnChar(nChar, nRepCnt, nFlags);
-	if (nChar =='w')
-	{
-		MessageBox(L"w");
-	}
-}
+//void CMFCApplication1View::OnChar(UINT nChar, UINT nRepCnt, UINT nFlags)
+//{
+//    // TODO: 在此添加消息处理程序代码和/或调用默认值
+//
+//    CView::OnChar(nChar, nRepCnt, nFlags);
+//	if (nChar =='w')
+//	{
+//		MessageBox(L"w");
+//	}
+//}
