@@ -168,7 +168,7 @@ void CMFCApplication1View::OnDraw(CDC* pDC)
     CNode head = g_Lines.moveToIndexNew1(m_ToIndex);
 
 	g_vPoint.push_back(CPoint(head.m_point.m_x, head.m_point.m_y));
-	drawPoits(pDC, g_vPoint);
+	//drawPoits(pDC, g_vPoint);//绘制蛇头
 
     for (auto& node : g_Lines.m_nodes)
     {
